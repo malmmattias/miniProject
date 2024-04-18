@@ -5,8 +5,14 @@ public class Main {
         Server server = new Server();
     }
 
-    public static void startClient(String[] args) {
-        Client client = new Client();
+
+
+    public class StartClient {
+        public static void main(String[] args) {
+            Client client = new Client();
+        }
+
+
     }
 
 

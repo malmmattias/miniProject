@@ -13,7 +13,7 @@ public class Server extends Thread {
     private Product[] products;
 
     //Change this later
-    private int port = 8000;
+    private int port = 1441;
 
     public Server() {
     }
