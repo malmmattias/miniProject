@@ -1,9 +1,6 @@
 package Controller;
 
-import Model.Product;
-import Model.Request;
-import Model.SellProduct;
-
+import Model.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -99,7 +96,7 @@ public class Server extends Thread {
                         Gson gson = new Gson();
                         Request request = gson.fromJson(jsonMessage.toString(), Request.class);
 
-                        if (request instanceof SellProduct) {
+                        if (request instanceof SellProductRequest) {
 
                         }
 
