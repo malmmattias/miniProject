@@ -1,6 +1,8 @@
 package Controller;
 
 import Model.Product;
+import Model.Request;
+import Model.VerifyUserRequest;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,6 +28,7 @@ public class Client {
     private String password;
     Scanner scanner = new Scanner(System.in);
     private ArrayList<Product> cart = new ArrayList<Product>();
+    private Request currentRequest;
 
     public Client() {
         try {
@@ -37,13 +40,13 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        login();
+        askLoginData();
         listener();
     }
 
 
 
-    private void login() {
+    private void askLoginData() {
         System.out.println("Are you a new user? y/n");
         String s = scanner.nextLine();
         if(Objects.equals(s, "y")){
@@ -76,6 +79,21 @@ public class Client {
     }
 
     private void verifyLogin(String usrName, String psWord) {
+        currentRequest = new VerifyUserRequest(usrName, psWord);
+        boolean verification;
+
+        try {
+            oos.writeObject(currentRequest);
+            verification = ois.readObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if(verification){
+            System.out.println("Welcome");
+        } else{
+            System.out.println("Wrong!");
+            askLoginData();
+        }
     }
 
     private void listener() {

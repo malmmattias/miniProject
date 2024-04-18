@@ -7,17 +7,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import com.google.gson.Gson;
 
 public class Server extends Thread {
-
+    private Map<String, String> loginCredentials = new HashMap<>();
     private Product[] products;
+
 
     //Change this later
     private int port = 1441;
 
     public Server() {
+        addPreDefinedUsers();
+        start();
+    }
+
+    //This method adds a couple of pre-defined registered users for testing purposes.
+    //A tester can log in using any of these credentials
+    private void addPreDefinedUsers() {
+        loginCredentials.put("mary", "abc");
+        loginCredentials.put("john", "abc");
     }
 
     public void run() {
@@ -35,9 +48,6 @@ public class Server extends Thread {
         }
     }
 
-    public void startClient() {
-
-    }
 
     public class ClientThread implements Runnable {
         public ObjectInputStream is = null;
@@ -60,16 +70,12 @@ public class Server extends Thread {
                 writer = new Writer();
 
                 new Reader(writer);
-                System.out.println("Connection Est");
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        public synchronized ObjectOutputStream getOs() {
-            return os;
-        }
 
         /**
          * The Reader class is a Runnable class that reads messages from the clients.
@@ -93,6 +99,7 @@ public class Server extends Thread {
             private synchronized void reading() {
                 try {
                     while (isRunning) {
+                        System.out.println("Server: Client connected");
 
                         Object jsonMessage = is.readObject();
                         Gson gson = new Gson();
@@ -112,6 +119,14 @@ public class Server extends Thread {
 
                         if (request instanceof AddUserRequest) {
                             
+                        }
+
+                        if (request instanceof VerifyUserRequest) {
+                            String usrName = ((VerifyUserRequest) request).getUsrName();
+                            String psWord = ((VerifyUserRequest) request).getPsWord();
+
+                            boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
+                            os.writeObject(verification);
                         }
 
 
