@@ -1,11 +1,13 @@
 package Controller;
 
 import Model.*;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import com.google.gson.Gson;
 
 public class Server extends Thread {
@@ -98,6 +100,18 @@ public class Server extends Thread {
 
                         if (request instanceof SellProductRequest) {
 
+                        }
+
+                        if (request instanceof SearchProductRequest) {
+
+                        }
+
+                        if (request instanceof BuyProductRequest){
+
+                        }
+
+                        if (request instanceof AddUserRequest) {
+                            
                         }
 
 
