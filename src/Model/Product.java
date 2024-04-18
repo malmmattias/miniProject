@@ -14,6 +14,10 @@ public class Product {
     this.condition = condition;
     this.status = status;
     }
+
+    public Product(){
+
+    }
     public int getPrice(){
     return price;
     }
