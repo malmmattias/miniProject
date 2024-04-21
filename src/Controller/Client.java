@@ -84,16 +84,16 @@ public class Client {
 
         try {
             oos.writeObject(currentRequest);
-            verification = ois.readObject();
+            //verification = ois.readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if(verification){
+        //if(verification){
             System.out.println("Welcome");
-        } else{
+        //} else{
             System.out.println("Wrong!");
             askLoginData();
-        }
+        //}
     }
 
     private void listener() {
