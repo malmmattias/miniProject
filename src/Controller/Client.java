@@ -117,16 +117,16 @@ public class Client {
 
         try {
             oos.writeObject(currentRequestv);
-            //verification = ois.readObject();
-        } catch (IOException e) {
+            verification = (boolean) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        //if(verification){
+        if(verification){
             System.out.println("Welcome");
-        //} else{
+        } else{
             System.out.println("Wrong!");
             askLoginData();
-        //}
+        }
     }
 
     private void listener() {

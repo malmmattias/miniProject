@@ -103,7 +103,8 @@ public class Server extends Thread {
 
                         Object jsonMessage = is.readObject();
                         Gson gson = new Gson();
-                        Request request = gson.fromJson(jsonMessage.toString(), Request.class);
+                        //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
+                        Request request = (Request) jsonMessage;
 
                         if (request instanceof SellProductRequest) {
 
@@ -128,6 +129,7 @@ public class Server extends Thread {
                             String psWord = ((VerifyUserRequest) request).getPsWord();
 
                             boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
+
                             os.writeObject(verification);
                         }
 
