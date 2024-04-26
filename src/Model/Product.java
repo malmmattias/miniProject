@@ -6,13 +6,15 @@ public class Product {
     private String color;
     private Condition condition;
     private Status status;
+    private String name;
 
-    public Product(int price, int productionYear, String color, Condition condition, Status status){
+    public Product(String name, int price, int productionYear, String color, Condition condition, Status status){
     this.price = price;
     this.productionYear = productionYear;
     this.color = color;
     this.condition = condition;
     this.status = status;
+    this.name = name;
     }
 
     public Product(){
@@ -50,5 +52,9 @@ public class Product {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
     }
 }

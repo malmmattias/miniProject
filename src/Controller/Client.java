@@ -29,6 +29,7 @@ public class Client {
     Scanner scanner = new Scanner(System.in);
     private ArrayList<Product> cart = new ArrayList<Product>();
     private Request currRequest;
+    private Object currResponse;
 
     public Client() {
         try {
@@ -45,6 +46,7 @@ public class Client {
     }
 
     private void menu(){
+        clearConsole();
         System.out.println("Choose what you want to do!");
         System.out.println("1. Sell product.");
         System.out.println("2. Search for product.");
@@ -74,6 +76,30 @@ public class Client {
     }
 
     private void purchaseHistory() {
+        currRequest = new PurchaseHistoryRequest();
+        currRequest.setUsername(username);
+        currResponse=null;
+        try {
+            oos.writeObject(currRequest);
+            ArrayList<String> history = (ArrayList<String>) ois.readObject();
+            if(history==null){
+                System.out.println("null");
+            }
+            clearConsole();
+            if(history ==null || history.isEmpty()){
+                System.out.println("Your history is empty");
+            } else {
+                System.out.println("Your history");
+                int counter = 1;
+                for (String str : history){
+                    System.out.println(counter++ + ". " + str);
+                }
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void registerInterest() {
@@ -105,7 +131,6 @@ public class Client {
         }
     }
 
-
     private void askLoginData() {
         System.out.println("Are you a new user? y/n");
         String s = scanner.nextLine();
@@ -124,14 +149,13 @@ public class Client {
 
         } else{
             System.out.println("Enter username: ");
-            String usrName = scanner.nextLine();
+            username = scanner.nextLine();
             System.out.println("Enter password: ");
-            String psWord = scanner.nextLine();
-            verifyLogin(usrName, psWord);
+            password = scanner.nextLine();
+            verifyLogin(username, password);
         }
 
     }
-
 
     private void verifyLogin(String usrName, String psWord) {
         currRequest = new VerifyUserRequest(usrName, psWord);
@@ -204,6 +228,16 @@ public class Client {
                 System.out.println("Wrong format. Please try again.");
             }
         }
+    }
+
+    /**
+     * Method to clear the console window by printing a dotted line.
+     */
+    public void clearConsole() {
+        for (int i = 0; i < 75; i++) {
+            System.out.print(".");
+        }
+        System.out.println();
     }
 
 

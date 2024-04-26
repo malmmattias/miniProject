@@ -34,12 +34,12 @@ public class Server extends Thread {
     //A tester can log in using any of these credentials
     private void addUser(String name, String password) {
         loginCredentials.put(name, password);
-        purchaseHistory.put(name, new ArrayList<String>());
+        purchaseHistory.put(name, new ArrayList<>());
     }
 
-    private void addToPurchaseHistory(String name, String item) {
+    private void addToPurchaseHistory(String name, String newItem) {
         ArrayList<String> purchases = purchaseHistory.get(name);
-        purchases.add(item);
+        purchases.add(newItem);
         purchaseHistory.put(name, purchases);
     }
 
@@ -79,7 +79,6 @@ public class Server extends Thread {
             try {
                 this.os = new ObjectOutputStream(clientSocket.getOutputStream());
                 this.is = new ObjectInputStream(clientSocket.getInputStream());
-
 
                 writer = new Writer();
 
@@ -136,9 +135,13 @@ public class Server extends Thread {
                             
                         }
 
-                        if (request instanceof VerifyUserRequest) {
+                        if(request instanceof  PurchaseHistoryRequest){
+                            String name = request.getUsername();
+                            ArrayList<String> returnData = getPurchaseHistory(name);
+                            os.writeObject(returnData);
+                        }
 
-                            System.out.println("HEHAE");
+                        if (request instanceof VerifyUserRequest) {
                             String usrName = ((VerifyUserRequest) request).getUsrName();
                             String psWord = ((VerifyUserRequest) request).getPsWord();
 
