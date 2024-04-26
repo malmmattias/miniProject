@@ -122,6 +122,8 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof VerifyUserRequest) {
+
+                            System.out.println("HEHAE");
                             String usrName = ((VerifyUserRequest) request).getUsrName();
                             String psWord = ((VerifyUserRequest) request).getPsWord();
 
