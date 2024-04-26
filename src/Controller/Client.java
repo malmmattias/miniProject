@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Client {
@@ -60,14 +62,8 @@ public class Client {
             username = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
-            System.out.println("Enter birthdate: (yyyy-MM-dd) ");
-            String date = scanner.nextLine();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                birthDate = sdf.parse(date);
-            } catch (ParseException e){
-                System.err.println("Error parsing date: " + e.getMessage());
-            }
+            enterBirthDate();
+
         } else{
             System.out.println("Enter username: ");
             String usrName = scanner.nextLine();
@@ -76,6 +72,43 @@ public class Client {
             verifyLogin(usrName, psWord);
         }
 
+    }
+
+    private void enterBirthDate() {
+        boolean validBirthDate = false;
+        Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}"); // Regular expression for yyyy-MM-dd format
+
+        while(!validBirthDate) {
+            System.out.println("Enter birthdate: (yyyy-MM-dd) ");
+            String date = scanner.nextLine();
+            Matcher matcher = pattern.matcher(date);
+
+            if (matcher.matches()) {
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    // Check if year, month, and day are within valid ranges
+                    int year = Integer.parseInt(date.substring(0, 4));
+                    int month = Integer.parseInt(date.substring(5, 7));
+                    int day = Integer.parseInt(date.substring(8, 10));
+                    if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                        birthDate = sdf.parse(date);
+                        validBirthDate = true;
+                        /*SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        String outputString = outputFormat.format(birthDate);
+                        System.out.println("Birthdate entered in correct format: " + outputString);
+                         */
+                    } else {
+                        System.out.println("Invalid year, month, or day. Please try again.");
+                    }
+                } catch (ParseException e) {
+                    System.out.println("Error parsing date.");
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid year, month, or day format.");
+                }
+            } else {
+                System.out.println("Wrong format. Please try again.");
+            }
+        }
     }
 
     private void verifyLogin(String usrName, String psWord) {
