@@ -18,6 +18,8 @@ public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
 
+    private ResizableProductsArray products = new ResizableProductsArray<>();
+
     //Change this later
     private int port = 1441;
 
@@ -120,10 +122,20 @@ public class Server extends Thread {
                         Request request = (Request) jsonMessage;
 
                         if (request instanceof SellProductRequest) {
-
+                            SellProductRequest spr = (SellProductRequest) request;
+                            int sizeBfr = products.size();
+                            Product product = spr.getProduct();
+                            products.add(product);
+                            int sizeAftr = products.size();
+                            if (sizeAftr>sizeBfr){
+                                os.writeObject(true);
+                            } else {
+                                os.writeObject(false);
+                            }
                         }
 
                         if (request instanceof SearchProductRequest) {
+
 
                         }
 

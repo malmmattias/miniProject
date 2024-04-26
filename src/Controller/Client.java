@@ -120,15 +120,37 @@ public class Client {
     }
 
     private void sellProduct() {
-        currRequest = new SellProductRequest();
-        boolean verification;
-
+        clearConsole();
+        Product product = createProduct();
+        currRequest = new SellProductRequest(product);
         try {
             oos.writeObject(currRequest);
-            verification = (boolean) ois.readObject();
+            boolean verification = (boolean) ois.readObject();
+            if(verification){
+                System.out.println("Your product has been added successfully");
+            } else {
+                System.out.println("Your product has not been added successfully");
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Product createProduct(){
+        Product product = new Product.Builder("Sample Product", 100, 2024)
+                .color("Red")
+                .condition(Condition.USED)
+                .status(Status.SOLD)
+                .build();
+
+        boolean loop = true;
+        while(loop){
+            scanner.nextLine();
+            System.out.println("Your product is: " + product.toString());
+            System.out.println("press the letter to change an attribute e.g. 'p' to change price");
+        }
+
+        return product;
     }
 
     private void askLoginData() {

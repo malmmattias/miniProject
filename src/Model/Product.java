@@ -1,6 +1,8 @@
 package Model;
 
-public class Product {
+import java.io.Serializable;
+
+public class Product implements Serializable {
     private int price;
     private int productionYear;
     private String color;
@@ -8,53 +10,64 @@ public class Product {
     private Status status;
     private String name;
 
-    public Product(String name, int price, int productionYear, String color, Condition condition, Status status){
-    this.price = price;
-    this.productionYear = productionYear;
-    this.color = color;
-    this.condition = condition;
-    this.status = status;
-    this.name = name;
+
+    private Product(Builder builder) {
+        this.price = builder.price;
+        this.productionYear = builder.productionYear;
+        this.color = builder.color;
+        this.condition = builder.condition;
+        this.status = builder.status;
+        this.name = builder.name;
     }
 
-    public Product(){
+    // Getters for all attributes
 
-    }
-    public int getPrice(){
-    return price;
-    }
-    public void setPrice(int price){
-        this.price = price;
-    }
-    public int getProductionYear(){
-        return productionYear;
-    }
-    public void setProductionYear(int productionYear){
-        this.productionYear = productionYear;
-    }
-    public String getColor(){
-        return color;
-    }
-    public void setColor(String color){
-        this.color = color;
-    }
-    public Condition getCondition() {
-        return condition;
+    public static class Builder {
+        // Required parameters
+        private int price;
+        private int productionYear;
+        private String name;
+
+        // Optional parameters - initialized to default values
+        private String color = "";
+        private Condition condition = Condition.NEW;
+        private Status status = Status.AVAILABLE;
+
+        public Builder(String name, int price, int productionYear) {
+            this.name = name;
+            this.price = price;
+            this.productionYear = productionYear;
+        }
+
+        public Builder color(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public Builder condition(Condition condition) {
+            this.condition = condition;
+            return this;
+        }
+
+        public Builder status(Status status) {
+            this.status = status;
+            return this;
+        }
+
+        public Product build() {
+            return new Product(this);
+        }
     }
 
-    public void setCondition(Condition condition) {
-        this.condition = condition;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        return "Product{" +
+                "price=" + price +
+                ", productionYear=" + productionYear +
+                ", color='" + color + '\'' +
+                ", condition=" + condition +
+                ", status=" + status +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
