@@ -112,11 +112,11 @@ public class Client {
     }
 
     private void verifyLogin(String usrName, String psWord) {
-        currentRequest = new VerifyUserRequest(usrName, psWord);
+        VerifyUserRequest currentRequestv = new VerifyUserRequest(usrName, psWord);
         boolean verification;
 
         try {
-            oos.writeObject(currentRequest);
+            oos.writeObject(currentRequestv);
             //verification = ois.readObject();
         } catch (IOException e) {
             throw new RuntimeException(e);
