@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,22 +16,35 @@ import com.google.gson.Gson;
 
 public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
-    private Product[] products;
-
+    private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
 
     //Change this later
     private int port = 1441;
 
     public Server() {
-        addPreDefinedUsers();
+        addUser("mary", "abc");
+        addUser("john", "abc");
         start();
+
+        addToPurchaseHistory("john", "iphone");
+        addToPurchaseHistory("john", "macBook");
     }
 
     //This method adds a couple of pre-defined registered users for testing purposes.
     //A tester can log in using any of these credentials
-    private void addPreDefinedUsers() {
-        loginCredentials.put("mary", "abc");
-        loginCredentials.put("john", "abc");
+    private void addUser(String name, String password) {
+        loginCredentials.put(name, password);
+        purchaseHistory.put(name, new ArrayList<String>());
+    }
+
+    private void addToPurchaseHistory(String name, String item) {
+        ArrayList<String> purchases = purchaseHistory.get(name);
+        purchases.add(item);
+        purchaseHistory.put(name, purchases);
+    }
+
+    public ArrayList<String> getPurchaseHistory(String usrName) {
+        return purchaseHistory.get(usrName);
     }
 
     public void run() {
