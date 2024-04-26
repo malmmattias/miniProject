@@ -1,8 +1,6 @@
 package Controller;
 
-import Model.Product;
-import Model.Request;
-import Model.VerifyUserRequest;
+import Model.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,7 +28,7 @@ public class Client {
     private String password;
     Scanner scanner = new Scanner(System.in);
     private ArrayList<Product> cart = new ArrayList<Product>();
-    private Request currentRequest;
+    private Request currRequest;
 
     public Client() {
         try {
@@ -46,6 +44,60 @@ public class Client {
         listener();
     }
 
+    private void menu(){
+        System.out.println("Choose what you want to do!");
+        System.out.println("1. Sell product.");
+        System.out.println("2. Search for product.");
+        System.out.println("3. Register interest in product category.");
+        System.out.println("4. Show purchase history.");
+        int choice = scanner.nextInt();
+        switch (choice){
+            case 1:
+                sellProduct();
+                break;
+            case 2:
+                searchProduct();
+                break;
+            case 3:
+                registerInterest();
+                break;
+            case 4:
+                purchaseHistory();
+                break;
+        }
+    }
+
+    private void purchaseHistory() {
+    }
+
+    private void registerInterest() {
+    }
+
+    private void searchProduct() {
+        System.out.println("Enter product");
+
+        currRequest = new SearchProductRequest();
+        boolean verification;
+
+        try {
+            oos.writeObject(currRequest);
+            verification = (boolean) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void sellProduct() {
+        currRequest = new SellProductRequest();
+        boolean verification;
+
+        try {
+            oos.writeObject(currRequest);
+            verification = (boolean) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     private void askLoginData() {
@@ -72,6 +124,43 @@ public class Client {
             verifyLogin(usrName, psWord);
         }
 
+    }
+
+
+    private void verifyLogin(String usrName, String psWord) {
+        currRequest = new VerifyUserRequest(usrName, psWord);
+        boolean verification;
+
+        try {
+            oos.writeObject(currRequest);
+            verification = (boolean) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if(verification){
+            System.out.println("Welcome");
+        } else{
+            System.out.println("Wrong!");
+            askLoginData();
+        }
+    }
+
+    private void listener() {
+        while(true){
+            menu();
+        }
+    }
+
+    public void addToCart(Product product) {
+        cart.add(product);
+    }
+
+    public void removeFromCart(Product product) {
+        cart.remove(product);
+    }
+
+    public void clearCart() {
+        cart.clear();
     }
 
     private void enterBirthDate() {
@@ -109,47 +198,6 @@ public class Client {
                 System.out.println("Wrong format. Please try again.");
             }
         }
-    }
-
-    private void verifyLogin(String usrName, String psWord) {
-        VerifyUserRequest currentRequestv = new VerifyUserRequest(usrName, psWord);
-        boolean verification;
-
-        try {
-            oos.writeObject(currentRequestv);
-            verification = (boolean) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        if(verification){
-            System.out.println("Welcome");
-        } else{
-            System.out.println("Wrong!");
-            askLoginData();
-        }
-    }
-
-    private void listener() {
-        while(true){
-            System.out.println("What do you want to do?");
-            System.out.println("Type 1. to add product");
-            int input = scanner.nextInt();
-            if (input == 1){
-                addToCart(new Product());
-            }
-        }
-    }
-
-    public void addToCart(Product product) {
-        cart.add(product);
-    }
-
-    public void removeFromCart(Product product) {
-        cart.remove(product);
-    }
-
-    public void clearCart() {
-        cart.clear();
     }
 
 
