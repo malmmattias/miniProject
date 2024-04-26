@@ -50,6 +50,7 @@ public class Client {
         System.out.println("2. Search for product.");
         System.out.println("3. Register interest in product category.");
         System.out.println("4. Show purchase history.");
+        System.out.println("5. Display cart");
         int choice = scanner.nextInt();
         switch (choice){
             case 1:
@@ -64,7 +65,12 @@ public class Client {
             case 4:
                 purchaseHistory();
                 break;
+            case 5:
+                showCart();
         }
+    }
+
+    private void showCart() {
     }
 
     private void purchaseHistory() {
