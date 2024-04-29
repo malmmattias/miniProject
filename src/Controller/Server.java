@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.*;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,12 +11,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
 import Model.Requests.*;
 import com.google.gson.Gson;
 
 public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
+    private ArrayList<String> productTest = new ArrayList<>();
+
 
     private ResizableProductsArray products = new ResizableProductsArray<>();
 
@@ -29,6 +33,11 @@ public class Server extends Thread {
 
         addToPurchaseHistory("john", "iphone");
         addToPurchaseHistory("john", "macBook");
+
+        productTest.add("iphone");
+        productTest.add("iphone");
+        productTest.add("mac");
+        productTest.add("husvagn");
     }
 
     private void addUser(String name, String password) {
@@ -124,7 +133,7 @@ public class Server extends Thread {
                             Product product = spr.getProduct();
                             products.add(product);
                             int sizeAftr = products.size();
-                            if (sizeAftr>sizeBfr){
+                            if (sizeAftr > sizeBfr) {
                                 os.writeObject(true);
                             } else {
                                 os.writeObject(false);
@@ -135,15 +144,26 @@ public class Server extends Thread {
                             SearchProductRequest spr = (SearchProductRequest) request;
                             if (!(spr.getProductName() == null)) {
                                 System.out.println("This is your item: " + spr.getProductName());
-                            } else {
-                                System.out.println("No item found");
                             }
 
+                            String prName = spr.getProductName();
+
+                            for (String product : productTest) {
+                                // Jämför produktnamnet med namnet på den aktuella produkten i listan
+                                if (prName.equals(product)) {
+                                    int i = 0;
+                                    //System.out.println((i+1) + ": " + product);
+                                    os.writeObject(true);
+                                } else {
+                                    os.writeObject(false);
+                                }
+
+                            }
 
 
                         }
 
-                        if (request instanceof BuyProductRequest){
+                        if (request instanceof BuyProductRequest) {
 
                         }
 
@@ -153,7 +173,7 @@ public class Server extends Thread {
                             addUser(username, password);
                         }
 
-                        if(request instanceof PurchaseHistoryRequest){
+                        if (request instanceof PurchaseHistoryRequest) {
                             String name = request.getUsername();
                             ArrayList<String> returnData = getPurchaseHistory(name);
                             os.writeObject(returnData);

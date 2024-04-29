@@ -110,7 +110,7 @@ public class Client {
 
     private void searchProduct() {
         System.out.println("Enter product to search for: ");
-        String nothing = scanner.nextLine();
+        String nothing = scanner.nextLine(); //This line is needed to clear the scanner bug.
         String productName = scanner.nextLine();
         currRequest.setItemName(productName);
 
