@@ -132,6 +132,13 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof SearchProductRequest) {
+                            SearchProductRequest spr = (SearchProductRequest) request;
+                            if (!(spr.getProductName() == null)) {
+                                System.out.println("This is your item: " + spr.getProductName());
+                            } else {
+                                System.out.println("No item found");
+                            }
+
 
 
                         }

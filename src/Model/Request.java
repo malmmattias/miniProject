@@ -5,6 +5,7 @@ import java.io.Serializable;
 public abstract class Request implements Serializable {
     private String username;
     private String passWord;
+    private String itemName;
 
     public String getUsername() {
         return username;
@@ -20,5 +21,12 @@ public abstract class Request implements Serializable {
 
     public void setPassWord(String passWord) {
         this.passWord = passWord;
+    }
+
+    public void setItemName(String itemName){
+        this.itemName = itemName;
+    }
+    public String getItemName(){
+        return itemName;
     }
 }

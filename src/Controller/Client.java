@@ -110,7 +110,9 @@ public class Client {
 
     private void searchProduct() {
         System.out.println("Enter product to search for: ");
+        String nothing = scanner.nextLine();
         String productName = scanner.nextLine();
+        currRequest.setItemName(productName);
 
         currRequest = new SearchProductRequest(productName); // Assuming constructor with product name parameter
         boolean productFound;
