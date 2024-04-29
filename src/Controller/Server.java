@@ -157,12 +157,11 @@ public class Server extends Thread {
                             for (String product : productTest) {
                                 // Jämför produktnamnet med namnet på den aktuella produkten i listan
                                 if (prName.equals(product)) {
-                                    System.out.println("Your item: " + product);
+                                    System.out.println("This item was found: " + product);
                                     itemFound = true;
-                                    break;
                                 }
                             }
-
+                            
                             os.writeObject(itemFound);
 
 
