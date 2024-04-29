@@ -109,14 +109,23 @@ public class Client {
     }
 
     private void searchProduct() {
-        System.out.println("Enter product");
+        System.out.println("Enter product to search for: ");
+        String productName = scanner.nextLine();
 
-        currRequest = new SearchProductRequest();
-        boolean verification;
+        currRequest = new SearchProductRequest(productName); // Assuming constructor with product name parameter
+        boolean productFound;
 
         try {
             oos.writeObject(currRequest);
-            verification = (boolean) ois.readObject();
+            productFound = (boolean) ois.readObject();
+
+            if (productFound) {
+                System.out.println("Product found!");
+                // Handle additional actions if the product is found
+            } else {
+                System.out.println("Product not found.");
+                // Handle what to do if the product is not found
+            }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
