@@ -1,6 +1,7 @@
 package Controller;
 
 import Model.*;
+import Model.Requests.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,7 +46,7 @@ public class Client {
         listener();
     }
 
-    private void menu(){
+    private void menu() {
         clearConsole();
         System.out.println("Choose what you want to do!");
         System.out.println("1. Sell product.");
@@ -54,7 +55,7 @@ public class Client {
         System.out.println("4. Show purchase history.");
         System.out.println("5. Display cart");
         int choice = scanner.nextInt();
-        switch (choice){
+        switch (choice) {
             case 1:
                 sellProduct();
                 break;
@@ -69,6 +70,7 @@ public class Client {
                 break;
             case 5:
                 showCart();
+                break;
         }
     }
 
@@ -78,20 +80,20 @@ public class Client {
     private void purchaseHistory() {
         currRequest = new PurchaseHistoryRequest();
         currRequest.setUsername(username);
-        currResponse=null;
+        currResponse = null;
         try {
             oos.writeObject(currRequest);
             ArrayList<String> history = (ArrayList<String>) ois.readObject();
-            if(history==null){
+            if (history == null) {
                 System.out.println("null");
             }
             clearConsole();
-            if(history ==null || history.isEmpty()){
+            if (history == null || history.isEmpty()) {
                 System.out.println("Your history is empty");
             } else {
                 System.out.println("Your history");
                 int counter = 1;
-                for (String str : history){
+                for (String str : history) {
                     System.out.println(counter++ + ". " + str);
                 }
             }
@@ -103,6 +105,7 @@ public class Client {
     }
 
     private void registerInterest() {
+        System.out.println("Select Category to register interest in:");
     }
 
     private void searchProduct() {
@@ -126,7 +129,7 @@ public class Client {
         try {
             oos.writeObject(currRequest);
             boolean verification = (boolean) ois.readObject();
-            if(verification){
+            if (verification) {
                 System.out.println("Your product has been added successfully");
             } else {
                 System.out.println("Your product has not been added successfully");
@@ -136,7 +139,7 @@ public class Client {
         }
     }
 
-    private Product createProduct(){
+    private Product createProduct() {
         Product product = new Product.Builder("Sample Product", 100, 2024)
                 .color("Red")
                 .condition(Condition.USED)
@@ -144,7 +147,7 @@ public class Client {
                 .build();
 
         boolean loop = true;
-        while(loop){
+        while (loop) {
             scanner.nextLine();
             System.out.println("Your product is: " + product.toString());
             System.out.println("press the letter to change an attribute e.g. 'p' to change price");
@@ -156,7 +159,7 @@ public class Client {
     private void askLoginData() {
         System.out.println("Are you a new user? y/n");
         String s = scanner.nextLine();
-        if(Objects.equals(s, "y")){
+        if (Objects.equals(s, "y")) {
             System.out.println("Enter firstname: ");
             firstName = scanner.nextLine();
             System.out.println("Enter lastname: ");
@@ -168,8 +171,8 @@ public class Client {
             System.out.println("Enter password: ");
             password = scanner.nextLine();
             enterBirthDate();
-
-        } else{
+            addUserToServer();
+        } else {
             System.out.println("Enter username: ");
             username = scanner.nextLine();
             System.out.println("Enter password: ");
@@ -177,6 +180,19 @@ public class Client {
             verifyLogin(username, password);
         }
 
+    }
+
+    private void addUserToServer() {
+        currRequest = new AddUserRequest();
+        currRequest.setUsername(username);
+        currRequest.setPassWord(password);
+
+        try {
+            oos.writeObject(currRequest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Your login credentials are now saved on the server!");
     }
 
     private void verifyLogin(String usrName, String psWord) {
@@ -189,16 +205,16 @@ public class Client {
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        if(verification){
+        if (verification) {
             System.out.println("Welcome");
-        } else{
+        } else {
             System.out.println("Wrong!");
             askLoginData();
         }
     }
 
     private void listener() {
-        while(true){
+        while (true) {
             menu();
         }
     }
@@ -219,7 +235,7 @@ public class Client {
         boolean validBirthDate = false;
         Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}"); // Regular expression for yyyy-MM-dd format
 
-        while(!validBirthDate) {
+        while (!validBirthDate) {
             System.out.println("Enter birthdate: (yyyy-MM-dd) ");
             String date = scanner.nextLine();
             Matcher matcher = pattern.matcher(date);

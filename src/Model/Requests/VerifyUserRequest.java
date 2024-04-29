@@ -1,6 +1,8 @@
-package Model;
+package Model.Requests;
 
-public class VerifyUserRequest extends Request{
+import Model.Request;
+
+public class VerifyUserRequest extends Request {
     private String usrName, psWord;
 
     public VerifyUserRequest(String usrName, String psWord) {

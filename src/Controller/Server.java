@@ -1,7 +1,6 @@
 package Controller;
 
 import Model.*;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
+import Model.Requests.*;
 import com.google.gson.Gson;
 
 public class Server extends Thread {
@@ -32,8 +31,6 @@ public class Server extends Thread {
         addToPurchaseHistory("john", "macBook");
     }
 
-    //This method adds a couple of pre-defined registered users for testing purposes.
-    //A tester can log in using any of these credentials
     private void addUser(String name, String password) {
         loginCredentials.put(name, password);
         purchaseHistory.put(name, new ArrayList<>());
@@ -144,10 +141,12 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof AddUserRequest) {
-                            
+                            String username = request.getUsername();
+                            String password = request.getPassWord();
+                            addUser(username, password);
                         }
 
-                        if(request instanceof  PurchaseHistoryRequest){
+                        if(request instanceof PurchaseHistoryRequest){
                             String name = request.getUsername();
                             ArrayList<String> returnData = getPurchaseHistory(name);
                             os.writeObject(returnData);
