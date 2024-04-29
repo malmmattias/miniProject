@@ -27,17 +27,22 @@ public class Server extends Thread {
     private int port = 1441;
 
     public Server() {
-        addUser("mary", "abc");
-        addUser("john", "abc");
-        start();
-
-        addToPurchaseHistory("john", "iphone");
-        addToPurchaseHistory("john", "macBook");
 
         productTest.add("iphone");
         productTest.add("iphone");
         productTest.add("mac");
         productTest.add("husvagn");
+
+        addUser("mary", "abc");
+        addUser("john", "abc");
+
+
+        start();
+
+        addToPurchaseHistory("john", "iphone");
+        addToPurchaseHistory("john", "macBook");
+
+
     }
 
     private void addUser(String name, String password) {
@@ -147,18 +152,18 @@ public class Server extends Thread {
                             }
 
                             String prName = spr.getProductName();
+                            boolean itemFound = false;
 
                             for (String product : productTest) {
                                 // Jämför produktnamnet med namnet på den aktuella produkten i listan
                                 if (prName.equals(product)) {
-                                    int i = 0;
-                                    //System.out.println((i+1) + ": " + product);
-                                    os.writeObject(true);
-                                } else {
-                                    os.writeObject(false);
+                                    System.out.println("Your item: " + product);
+                                    itemFound = true;
+                                    break;
                                 }
-
                             }
+
+                            os.writeObject(itemFound);
 
 
                         }
