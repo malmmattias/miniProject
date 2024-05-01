@@ -11,6 +11,14 @@ public class Product implements Serializable {
     private String name;
 
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private Product(Builder builder) {
         this.price = builder.price;
         this.productionYear = builder.productionYear;

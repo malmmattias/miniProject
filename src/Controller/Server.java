@@ -18,31 +18,47 @@ import com.google.gson.Gson;
 public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
-    private ArrayList<String> productTest = new ArrayList<>();
-
-
-    private ResizableProductsArray products = new ResizableProductsArray<>();
+    private ResizableProductsArray<Product> products = new ResizableProductsArray<>();
 
     //Change this later
     private int port = 1441;
 
     public Server() {
 
-        productTest.add("iphone");
-        productTest.add("iphone");
-        productTest.add("mac");
-        productTest.add("husvagn");
 
         addUser("mary", "abc");
         addUser("john", "abc");
 
 
         start();
+        testProductArray();
+
 
         addToPurchaseHistory("john", "iphone");
         addToPurchaseHistory("john", "macBook");
 
 
+    }
+    // To test that the products can be found
+    public void testProductArray() {
+        Product product1 = new Product.Builder("iphone", 1000, 2022)
+                .color("Black")
+                .condition(Condition.NEW)
+                .status(Status.AVAILABLE)
+                .build();
+
+        Product product2 = new Product.Builder("mac", 2000, 2021)
+                .color("Silver")
+                .condition(Condition.USED)
+                .status(Status.SOLD)
+                .build();
+
+        products.add(product1);
+        products.add(product2);
+        System.out.println("Products in the array:");
+        for (int i = 0; i < products.size(); i++) {
+            System.out.println(products.get(i));
+        }
     }
 
     private void addUser(String name, String password) {
@@ -147,22 +163,19 @@ public class Server extends Thread {
 
                         if (request instanceof SearchProductRequest) {
                             SearchProductRequest spr = (SearchProductRequest) request;
-                            if (!(spr.getProductName() == null)) {
-                                System.out.println("This is your item: " + spr.getProductName());
-                            }
+                            String productName = spr.getProductName();
+                            boolean productFound = false;
 
-                            String prName = spr.getProductName();
-                            boolean itemFound = false;
-
-                            for (String product : productTest) {
-                                // Jämför produktnamnet med namnet på den aktuella produkten i listan
-                                if (prName.equals(product)) {
-                                    System.out.println("This item was found: " + product);
-                                    itemFound = true;
+                            for (int i = 0; i < products.size(); i++) {
+                                Product product = products.get(i);
+                                if (productName.equals(product.getName())) {
+                                    System.out.println("Product found: " + product.getName());
+                                    productFound = true;
+                                    break;
                                 }
                             }
-                            
-                            os.writeObject(itemFound);
+
+                            os.writeObject(productFound);
 
 
                         }

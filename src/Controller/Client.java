@@ -109,13 +109,11 @@ public class Client {
     }
 
     private void searchProduct() {
-        System.out.println("Enter product to search for: ");
-        String nothing = scanner.nextLine(); //This line is needed to clear the scanner bug.
+        System.out.println("Enter product you want to search for: ");
+        String nothing = scanner.nextLine(); // To clear the scanner bug.
         String productName = scanner.nextLine();
-        currRequest.setItemName(productName);
-
-        currRequest = new SearchProductRequest(productName); // Assuming constructor with product name parameter
-        boolean productFound;
+        currRequest = new SearchProductRequest(productName);
+        boolean productFound = false;
 
         try {
             oos.writeObject(currRequest);
@@ -123,10 +121,8 @@ public class Client {
 
             if (productFound) {
                 System.out.println("Product found!");
-                // Handle additional actions if the product is found
             } else {
                 System.out.println("Product not found.");
-                // Handle what to do if the product is not found
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
