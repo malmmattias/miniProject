@@ -44,13 +44,13 @@ public class Server extends Thread {
     public void testProductArray() {
         Product product1 = new Product.Builder("iphone", 1000, 2022, "john")
                 .color("Black")
-                .condition(ItemCondition.NEW)
+                .itemCondidtion(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
 
         Product product2 = new Product.Builder("mac", 2000, 2021, "john")
                 .color("Silver")
-                .condition(ItemCondition.USED)
+                .itemCondidtion(ItemCondition.USED)
                 .status(Status.SOLD)
                 .build();
 

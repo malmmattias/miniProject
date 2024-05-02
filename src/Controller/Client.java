@@ -78,13 +78,13 @@ public class Client {
     private void showCart() {
         Product product = new Product.Builder("MacBook", 100, 2024, username)
                 .color("Red")
-                .condition(ItemCondition.USED)
+                .itemCondidtion(ItemCondition.USED)
                 .status(Status.SOLD)
                 .build();
         addToCart(product);
         product = new Product.Builder("Iphone", 100, 2024, username)
                 .color("Red")
-                .condition(ItemCondition.USED)
+                .itemCondidtion(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
         addToCart(product);
@@ -186,15 +186,15 @@ public class Client {
     private Product createProduct() {
         Product product = new Product.Builder("Sample Product", 100, 2024, username)
                 .color("Red")
-                .condition(ItemCondition.USED)
-                .status(Status.SOLD)
+                .itemCondidtion(ItemCondition.USED)
+                .status(Status.AVAILABLE)
                 .build();
 
         boolean loop = true;
 
         while (loop) {
             System.out.println("Your product is: " + product.toString());
-            System.out.println("press the letter to change an attribute e.g. 'p' to change price, press r to continue");
+            System.out.println("press the letter to change an attribute e.g. 'p' to change price, press r to ready");
 
             String input = scanner.next();
 
