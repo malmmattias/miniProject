@@ -3,7 +3,6 @@ package Controller;
 import Model.*;
 import Model.Requests.*;
 
-import java.io.DataOutput;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -33,6 +32,9 @@ public class Client {
     private ArrayList<Product> cart = new ArrayList<Product>();
     private Request currRequest;
     private Object currResponse;
+    private int minPrice = 0;
+    private int maxPrice = 1000000;
+    private ItemCondition itemCondition = ItemCondition.USED;
 
     public Client() {
         try {
@@ -98,7 +100,7 @@ public class Client {
         System.out.println("2. Continue shopping");
         int input = scanner.nextInt();
 
-        if(input == 1){
+        if (input == 1) {
             sendPurchaseRequest(cart);
             System.out.println("Your purchase request has been sent!");
             clearCart();
@@ -148,25 +150,48 @@ public class Client {
 
     private void searchProduct() {
         System.out.println("Enter product you want to search for: ");
-        String nothing = scanner.nextLine(); // To clear the scanner bug.
+        String response = scanner.nextLine(); // To clear the scanner bug.
         String productName = scanner.nextLine();
-        currRequest = new SearchProductRequest(productName);
+        System.out.println("Would you like to filter the search? y/n");
+        response = scanner.nextLine();
+        if (response.equals("y")) {
+            System.out.println("Enter minimum price range");
+            minPrice = scanner.nextInt();
+            System.out.println("Enter maximum price range");
+            maxPrice = scanner.nextInt();
+
+            ItemCondition searchCondition = getItemCondition();
+
+            currRequest = new SearchProductRequest(productName, minPrice, maxPrice, searchCondition);
+
+            System.out.println("Jag når hit");
+        }
+        if (response.equals("n")) {
+            //itemCondition = itemCondition.USED;
+            currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition);
+            //currRequest = new SearchProductRequest(productName);
+
+            System.out.println("Jag nådde elseblocket");
+        }
+
+
+        // currRequest = new SearchProductRequest(productName);
         boolean productFound = false;
 
         try {
             oos.writeObject(currRequest);
             Object o = ois.readObject();
 
-            if(o instanceof Boolean){
+            if (o instanceof Boolean) {
 
                 productFound = (boolean) o;
-                if(productFound){
+                if (productFound) {
                     System.out.println("Product found!" + "\n");
                     clearConsole();
                     o = ois.readObject();
-                    if (o instanceof ArrayList){
+                    if (o instanceof ArrayList) {
                         ArrayList<Product> productsList = (ArrayList) o;
-                        for(Product a : productsList){
+                        for (Product a : productsList) {
                             System.out.println(a);
                         }
 
@@ -179,10 +204,39 @@ public class Client {
             }
 
 
-
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    private ItemCondition getItemCondition() {
+        System.out.println("What condition should the product be in?" + "\n" +
+                "1 = NEW,\n" +
+                "2 = VERY_GOOD,\n" +
+                "3 = GOOD,\n" +
+                "4 = USED,\n" +
+                "5 = NOT_WORKING_PROPERLY");
+        int condition = scanner.nextInt();
+        ItemCondition itemCondition = null;
+        switch (condition) {
+            case 1:
+                itemCondition = ItemCondition.NEW;
+                break;
+            case 2:
+                itemCondition = ItemCondition.VERY_GOOD;
+                break;
+            case 3:
+                itemCondition = ItemCondition.GOOD;
+                break;
+            case 4:
+                itemCondition = ItemCondition.USED;
+                break;
+            case 5:
+                itemCondition = ItemCondition.NOT_WORKING_PROPERLY;
+                break;
+        }
+        return itemCondition;
     }
 
     private void sellProduct() {

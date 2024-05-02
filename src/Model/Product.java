@@ -38,6 +38,13 @@ public class Product implements Serializable {
         price = newPrice;
     }
 
+    public int getPrice(){
+        return this.price;
+    }
+
+    public ItemCondition getItemCondition() {
+        return this.itemCondition;
+    }
     // Getters for all attributes
 
     public static class Builder {

@@ -20,6 +20,7 @@ public class Server extends Thread {
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
     private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
     private HashMap<String, ArrayList<Product>> purchaseReq= new HashMap<>();
+    private ArrayList<Product> productsList;
 
     //Change this later
     private int port = 1441;
@@ -168,14 +169,17 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof SearchProductRequest) {
+                            System.out.println("JAG NÅDDE SERVERN");
                             SearchProductRequest spr = (SearchProductRequest) request;
                             String productName = spr.getProductName().toUpperCase();
-                            ArrayList<Product> productsList = new ArrayList<>();
+                            productsList = new ArrayList<>();
                             boolean productFound = false;
 
                             for (int i = 0; i < products.size(); i++) {
                                 Product product = products.get(i);
-                                if (productName.contains(product.getName().toUpperCase())) {
+                                if (productName.contains(product.getName().toUpperCase())
+                                && (product.getPrice() >= spr.getMin() && product.getPrice() <= spr.getMax())
+                                && (spr.getItemCondition().equals(product.getItemCondition()))) {
                                     System.out.println("Product found: " + product.getName());
                                     productsList.add(product);
                                     productFound = true;
