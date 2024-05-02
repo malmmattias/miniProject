@@ -149,30 +149,73 @@ public class Client {
     private Product createProduct() {
         Product product = new Product.Builder("Sample Product", 100, 2024)
                 .color("Red")
-                .condition(Condition.USED)
+                .condition(ItemCondition.USED)
                 .status(Status.SOLD)
                 .build();
 
         boolean loop = true;
+
         while (loop) {
             System.out.println("Your product is: " + product.toString());
-            System.out.println("press the letter to change an attribute e.g. 'p' to change price, press c to continue");
+            System.out.println("press the letter to change an attribute e.g. 'p' to change price, press r to continue");
 
             String input = scanner.nextLine();
 
             switch (input) {
-                case "c":
+                case "r":
                     loop = false;
+                    break;
                 case "p":
                     System.out.println("Enter new price: ");
                     int newPrice = scanner.nextInt();
                     product.setPrice(newPrice);
-                
+                    break;
+                case "y":
+                    System.out.println("Enter new year: ");
+                    int newYear = scanner.nextInt();
+                    product.setYearOfProduction(newYear);
+                    break;
+                case "i":
+                    System.out.println("Enter new item condition" +
+                            "    1 = NEW,\n" +
+                            "    2 = VERY_GOOD,\n" +
+                            "    3 = GOOD,\n" +
+                            "    4 = USED,\n" +
+                            "    5 = NOT_WORKING_PROPERLY ");
+                    int itemCondition = scanner.nextInt();
+                    modifyItemCondition(itemCondition, product);
+                    break;
+                case "c":
+                    System.out.println("Enter new color: ");
+                    String color = scanner.nextLine();
+                    product.setColor(color);
+                case "n":
+                    System.out.println("Enter new name:");
+                    String newName = scanner.nextLine();
+                    product.setName(newName);
             }
 
         }
 
         return product;
+    }
+
+    private void modifyItemCondition(int itemCondition, Product product) {
+        if (itemCondition == 1) {
+            product.setItemCondition(ItemCondition.NEW);
+        }
+        if (itemCondition == 2) {
+            product.setItemCondition(ItemCondition.VERY_GOOD);
+        }
+        if (itemCondition == 3) {
+            product.setItemCondition(ItemCondition.GOOD);
+        }
+        if (itemCondition == 4) {
+            product.setItemCondition(ItemCondition.USED);
+        }
+        if (itemCondition == 5) {
+            product.setItemCondition(ItemCondition.NOT_WORKING_PROPERLY);
+        }
     }
 
     private void askLoginData() {

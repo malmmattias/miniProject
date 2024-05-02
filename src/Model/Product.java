@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class Product implements Serializable {
     private int price;
-    private int productionYear;
+    private int yearOfProduction;
     private String color;
-    private Condition condition;
+    private ItemCondition itemCondition;
     private Status status;
     private String name;
 
@@ -21,9 +21,9 @@ public class Product implements Serializable {
 
     private Product(Builder builder) {
         this.price = builder.price;
-        this.productionYear = builder.productionYear;
+        this.yearOfProduction = builder.productionYear;
         this.color = builder.color;
-        this.condition = builder.condition;
+        this.itemCondition = builder.itemCondition;
         this.status = builder.status;
         this.name = builder.name;
     }
@@ -42,7 +42,7 @@ public class Product implements Serializable {
 
         // Optional parameters - initialized to default values
         private String color = "";
-        private Condition condition = Condition.NEW;
+        private ItemCondition itemCondition = ItemCondition.NEW;
         private Status status = Status.AVAILABLE;
 
         public Builder(String name, int price, int productionYear) {
@@ -56,8 +56,8 @@ public class Product implements Serializable {
             return this;
         }
 
-        public Builder condition(Condition condition) {
-            this.condition = condition;
+        public Builder condition(ItemCondition itemCondition) {
+            this.itemCondition = itemCondition;
             return this;
         }
 
@@ -75,15 +75,33 @@ public class Product implements Serializable {
         }
     }
 
+
+    public void setYearOfProduction(int yearOfProduction) {
+        this.yearOfProduction = yearOfProduction;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setItemCondition(ItemCondition itemCondition) {
+        this.itemCondition = itemCondition;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "Product{" +
-                "price=" + price +
-                ", productionYear=" + productionYear +
-                ", color='" + color + '\'' +
-                ", condition=" + condition +
-                ", status=" + status +
-                ", name='" + name + '\'' +
-                '}';
+
+        return "Your product +\n" +
+                "   price: " + price + "\n" +
+                "   year of production: " + yearOfProduction + "\n" +
+                "   color: " + color + "\n" +
+                "   itemCondition: " + itemCondition + "\n" +
+                "   status: " + status + "\n" +
+                "   name: " + name + "\n";
     }
+
 }

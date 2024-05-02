@@ -1,6 +1,6 @@
 package Model;
 
-public enum Condition {
+public enum ItemCondition {
     NEW,
     VERY_GOOD,
     GOOD,
