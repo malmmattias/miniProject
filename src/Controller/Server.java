@@ -144,10 +144,9 @@ public class Server extends Thread {
                     while (isRunning) {
                         System.out.println("Server: Client connected");
 
-                        Object request = is.readObject();
                         //Gson gson = new Gson();
                         //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
-                        //Request request = (Request) jsonMessage;
+                        Request request = (Request) is.readObject();
 
                         if (request instanceof SellProductRequest) {
                             System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
