@@ -19,6 +19,7 @@ public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
     private ResizableProductsArray<Product> products = new ResizableProductsArray<>();
+    private HashMap<String, ArrayList<Product>> purchaseReq= new HashMap<>();
 
     //Change this later
     private int port = 1441;
@@ -181,7 +182,9 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof BuyProductRequest) {
-
+                            String buyer = request.getUsername();
+                            ArrayList<Product> itemsToBuy = ((BuyProductRequest) request).getProducts();
+                            purchaseReq.put(buyer, itemsToBuy);
                         }
 
                         if (request instanceof AddUserRequest) {

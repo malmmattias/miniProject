@@ -3,6 +3,7 @@ package Controller;
 import Model.*;
 import Model.Requests.*;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -75,6 +76,42 @@ public class Client {
     }
 
     private void showCart() {
+        Product product = new Product.Builder("MacBook", 100, 2024)
+                .color("Red")
+                .condition(ItemCondition.USED)
+                .status(Status.SOLD)
+                .build();
+        addToCart(product);
+        product = new Product.Builder("Iphone", 100, 2024)
+                .color("Red")
+                .condition(ItemCondition.USED)
+                .status(Status.AVAILABLE)
+                .build();
+        addToCart(product);
+        System.out.println("Products in your cart:");
+        for (Product p : cart) {
+            System.out.println(p.getName());
+        }
+        System.out.println("Do you want to check out or continue shopping?");
+        System.out.println("1. Check out");
+        System.out.println("2. Continue shopping");
+        int input = scanner.nextInt();
+
+        if(input == 1){
+            sendPurchaseRequest(cart);
+            System.out.println("Your purchase request has been sent!");
+            clearCart();
+        }
+    }
+
+    private void sendPurchaseRequest(ArrayList<Product> cart) {
+        currRequest = new BuyProductRequest(cart);
+        currRequest.setUsername(username);
+        try {
+            oos.writeObject(currRequest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void purchaseHistory() {
@@ -159,7 +196,7 @@ public class Client {
             System.out.println("Your product is: " + product.toString());
             System.out.println("press the letter to change an attribute e.g. 'p' to change price, press r to continue");
 
-            String input = scanner.nextLine();
+            String input = scanner.next();
 
             switch (input) {
                 case "r":
