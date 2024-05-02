@@ -148,9 +148,21 @@ public class Client {
 
         boolean loop = true;
         while (loop) {
-            scanner.nextLine();
             System.out.println("Your product is: " + product.toString());
-            System.out.println("press the letter to change an attribute e.g. 'p' to change price");
+            System.out.println("press the letter to change an attribute e.g. 'p' to change price, press c to continue");
+
+            String input = scanner.nextLine();
+
+            switch (input) {
+                case "c":
+                    loop = false;
+                case "p":
+                    System.out.println("Enter new price: ");
+                    int newPrice = scanner.nextInt();
+                    product.setPrice(newPrice);
+                
+            }
+
         }
 
         return product;
