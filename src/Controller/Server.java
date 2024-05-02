@@ -19,7 +19,7 @@ public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
     private ResizableProductsArray<Product> products = new ResizableProductsArray<>();
-    private HashMap<String, ArrayList<Product>> purchaseReq= new HashMap<>();
+    private ArrayList<Product> purchaseReq= new ArrayList<>();
 
     //Change this later
     private int port = 1441;
@@ -99,6 +99,7 @@ public class Server extends Thread {
         private final Socket clientSocket;
 
         private Writer writer;
+        private String username;
 
 
         private ClientThread(Socket clientSocket) {
@@ -182,13 +183,11 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof BuyProductRequest) {
-                            String buyer = request.getUsername();
-                            ArrayList<Product> itemsToBuy = ((BuyProductRequest) request).getProducts();
-                            purchaseReq.put(buyer, itemsToBuy);
+                            purchaseReq = ((BuyProductRequest) request).getProducts();
                         }
 
                         if (request instanceof AddUserRequest) {
-                            String username = request.getUsername();
+                            username = request.getUsername();
                             String password = request.getPassWord();
                             addUser(username, password);
                         }
@@ -235,9 +234,23 @@ public class Server extends Thread {
             public void run() {
                 while (true) {
                     try {
+                        checkPurchaseReq();
                         sleep(5000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            private synchronized void checkPurchaseReq() {
+                for (Product p : purchaseReq){
+                    if (Objects.equals(p.getSeller(), username)){
+                        try {
+                            os.writeObject("Someone wants to purchase " + p.getName());
+                            os.flush();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }

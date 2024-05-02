@@ -98,6 +98,9 @@ public class Client {
         int input = scanner.nextInt();
 
         if(input == 1){
+            for(Product p : cart){
+                p.setBuyer(username);
+            }
             sendPurchaseRequest(cart);
             System.out.println("Your purchase request has been sent!");
             clearCart();
@@ -106,7 +109,6 @@ public class Client {
 
     private void sendPurchaseRequest(ArrayList<Product> cart) {
         currRequest = new BuyProductRequest(cart);
-        currRequest.setUsername(username);
         try {
             oos.writeObject(currRequest);
         } catch (IOException e) {
@@ -277,6 +279,7 @@ public class Client {
             System.out.println("Enter password: ");
             password = scanner.nextLine();
             verifyLogin(username, password);
+            addUserToServer();
         }
 
     }
@@ -314,6 +317,30 @@ public class Client {
 
     private void listener() {
         while (true) {
+            Thread listenerThread = new Thread(() -> {
+                try {
+                    while (true) {
+                        // Lyssna på meddelanden från servern
+                        Object receivedObject = ois.readObject();
+
+                        // Hantera mottagna meddelanden enligt behov
+                        if (receivedObject instanceof String) {
+                            String message = (String) receivedObject;
+                            System.out.println("Message from server: " + message);
+                            // TODO: Godkänn om produkten får köpas eller ej och skicka tillbaka till Servern.
+                        } else if (receivedObject instanceof ArrayList<?>) {
+                            // Om det är en lista med inköpsförfrågningar, gör något med den
+                            ArrayList<Product> purchaseRequests = (ArrayList<Product>) receivedObject;
+                            System.out.println("HEEJJJJ");
+                            // Behandla inköpsförfrågningarna, t.ex. lägg till dem i en kö
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                    // Hantera eventuella fel
+                }
+            });
+            listenerThread.start();
             menu();
         }
     }
