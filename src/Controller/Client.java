@@ -161,17 +161,23 @@ public class Client {
 
                 productFound = (boolean) o;
                 if(productFound){
-                    System.out.println("Product found!");
+                    System.out.println("Product found!" + "\n");
+                    clearConsole();
                     o = ois.readObject();
                     if (o instanceof ArrayList){
                         ArrayList<Product> productsList = (ArrayList) o;
-                        System.out.println(productsList);
+                        for(Product a : productsList){
+                            System.out.println(a);
+                        }
+
                     }
 
                 } else {
-                    System.out.println("Product not found!");
+                    System.out.println("Product not found!" + "\n");
+                    clearConsole();
                 }
             }
+
 
 
         } catch (IOException | ClassNotFoundException e) {
