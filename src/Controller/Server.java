@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 public class Server extends Thread {
     private Map<String, String> loginCredentials = new HashMap<>();
     private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
-    private ResizableProductsArray<Product> products = new ResizableProductsArray<>();
+    private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
     private HashMap<String, ArrayList<Product>> purchaseReq= new HashMap<>();
 
     //Change this later
@@ -144,22 +144,28 @@ public class Server extends Thread {
                     while (isRunning) {
                         System.out.println("Server: Client connected");
 
-                        Object jsonMessage = is.readObject();
-                        Gson gson = new Gson();
+                        Object request = is.readObject();
+                        //Gson gson = new Gson();
                         //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
-                        Request request = (Request) jsonMessage;
+                        //Request request = (Request) jsonMessage;
 
                         if (request instanceof SellProductRequest) {
+                            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                             SellProductRequest spr = (SellProductRequest) request;
                             int sizeBfr = products.size();
                             Product product = spr.getProduct();
                             products.add(product);
+
+                            products.toStringMethod();
+                            System.out.println("Update from sellrequest");
+
                             int sizeAftr = products.size();
                             if (sizeAftr > sizeBfr) {
                                 os.writeObject(true);
                             } else {
                                 os.writeObject(false);
                             }
+
                         }
 
                         if (request instanceof SearchProductRequest) {
@@ -174,7 +180,6 @@ public class Server extends Thread {
                                     System.out.println("Product found: " + product.getName());
                                     productsList.add(product);
                                     productFound = true;
-                                    break;
                                 }
                             }
 
@@ -189,6 +194,9 @@ public class Server extends Thread {
 
                             productsList.clear();
                             os.flush();
+
+                            products.toStringMethod();
+                            System.out.println("Update from search request");
 
 
 

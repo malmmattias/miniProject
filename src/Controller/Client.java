@@ -28,6 +28,7 @@ public class Client {
     private String email;
     private String username;
     private String password;
+    private String nothing;
     Scanner scanner = new Scanner(System.in);
     private ArrayList<Product> cart = new ArrayList<Product>();
     private Request currRequest;
@@ -183,6 +184,7 @@ public class Client {
         Product product = createProduct();
         currRequest = new SellProductRequest(product);
         try {
+            System.out.println("Im printing");
             oos.writeObject(currRequest);
             boolean verification = (boolean) ois.readObject();
             if (verification) {
@@ -237,10 +239,12 @@ public class Client {
                     break;
                 case "c":
                     System.out.println("Enter new color: ");
+                    nothing = scanner.nextLine(); //Bug
                     String color = scanner.nextLine();
                     product.setColor(color);
                 case "n":
                     System.out.println("Enter new name:");
+                    nothing = scanner.nextLine(); //Bug
                     String newName = scanner.nextLine();
                     product.setName(newName);
 

@@ -36,6 +36,10 @@ public class ResizableProductsArray<T> {
         array = newArray;
     }
 
+    public void toStringMethod() {
+        System.out.println("NUmber of products " + size);
+    }
+
     private Object[] getAllProducts() {
         return array;
     }
