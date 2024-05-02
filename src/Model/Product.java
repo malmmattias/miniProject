@@ -28,6 +28,10 @@ public class Product implements Serializable {
         this.name = builder.name;
     }
 
+    public void setPrice(int newPrice) {
+        price = newPrice;
+    }
+
     // Getters for all attributes
 
     public static class Builder {
@@ -60,6 +64,10 @@ public class Product implements Serializable {
         public Builder status(Status status) {
             this.status = status;
             return this;
+        }
+
+        public void setPrice(int price) {
+            this.price = price;
         }
 
         public Product build() {
