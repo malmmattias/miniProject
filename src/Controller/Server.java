@@ -163,12 +163,12 @@ public class Server extends Thread {
 
                         if (request instanceof SearchProductRequest) {
                             SearchProductRequest spr = (SearchProductRequest) request;
-                            String productName = spr.getProductName();
+                            String productName = spr.getProductName().toUpperCase();
                             boolean productFound = false;
 
                             for (int i = 0; i < products.size(); i++) {
                                 Product product = products.get(i);
-                                if (productName.equals(product.getName())) {
+                                if (productName.contains(product.getName().toUpperCase())) {
                                     System.out.println("Product found: " + product.getName());
                                     productFound = true;
                                     break;
