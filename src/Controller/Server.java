@@ -165,18 +165,33 @@ public class Server extends Thread {
                         if (request instanceof SearchProductRequest) {
                             SearchProductRequest spr = (SearchProductRequest) request;
                             String productName = spr.getProductName().toUpperCase();
+                            ArrayList<Product> productsList = new ArrayList<>();
                             boolean productFound = false;
 
                             for (int i = 0; i < products.size(); i++) {
                                 Product product = products.get(i);
                                 if (productName.contains(product.getName().toUpperCase())) {
                                     System.out.println("Product found: " + product.getName());
+                                    productsList.add(product);
                                     productFound = true;
                                     break;
                                 }
                             }
 
-                            os.writeObject(productFound);
+                            if(productFound){
+                                System.out.println("NU SKICKAR JAG LISTFAN");
+                                os.writeObject(productFound);
+                                os.writeObject(productsList);
+                            } else {
+                                System.out.println("NU BLEV DET FALSE");
+                                os.writeObject(productFound);
+                            }
+
+                            productsList.clear();
+                            os.flush();
+
+
+
 
 
                         }

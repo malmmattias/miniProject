@@ -154,13 +154,25 @@ public class Client {
 
         try {
             oos.writeObject(currRequest);
-            productFound = (boolean) ois.readObject();
+            Object o = ois.readObject();
 
-            if (productFound) {
-                System.out.println("Product found!");
-            } else {
-                System.out.println("Product not found.");
+            if(o instanceof Boolean){
+
+                productFound = (boolean) o;
+                if(productFound){
+                    System.out.println("Product found!");
+                    o = ois.readObject();
+                    if (o instanceof ArrayList){
+                        ArrayList<Product> productsList = (ArrayList) o;
+                        System.out.println(productsList);
+                    }
+
+                } else {
+                    System.out.println("Product not found!");
+                }
             }
+
+
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -206,6 +218,7 @@ public class Client {
                     System.out.println("Enter new price: ");
                     int newPrice = scanner.nextInt();
                     product.setPrice(newPrice);
+
                     break;
                 case "y":
                     System.out.println("Enter new year: ");
@@ -230,6 +243,7 @@ public class Client {
                     System.out.println("Enter new name:");
                     String newName = scanner.nextLine();
                     product.setName(newName);
+
             }
 
         }
@@ -371,7 +385,7 @@ public class Client {
      * Method to clear the console window by printing a dotted line.
      */
     public void clearConsole() {
-        for (int i = 0; i < 75; i++) {
+        for (int i = 0; i < 100; i++) {
             System.out.print(".");
         }
         System.out.println();
