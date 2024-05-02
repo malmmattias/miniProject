@@ -149,8 +149,8 @@ public class Client {
     private Product createProduct() {
         Product product = new Product.Builder("Sample Product", 100, 2024)
                 .color("Red")
-                .condition(ItemCondition.USED)
-                .status(Status.SOLD)
+                .itemCondidtion(ItemCondition.USED)
+                .status(Status.AVAILABLE)
                 .build();
 
         boolean loop = true;

@@ -56,7 +56,7 @@ public class Product implements Serializable {
             return this;
         }
 
-        public Builder condition(ItemCondition itemCondition) {
+        public Builder itemCondidtion(ItemCondition itemCondition) {
             this.itemCondition = itemCondition;
             return this;
         }
