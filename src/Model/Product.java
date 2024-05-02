@@ -9,6 +9,7 @@ public class Product implements Serializable {
     private ItemCondition itemCondition;
     private Status status;
     private String name;
+    private String seller;
 
 
     public String getName() {
@@ -19,6 +20,10 @@ public class Product implements Serializable {
         this.name = name;
     }
 
+    public String getSeller() {
+        return seller;
+    }
+
     private Product(Builder builder) {
         this.price = builder.price;
         this.yearOfProduction = builder.productionYear;
@@ -26,6 +31,7 @@ public class Product implements Serializable {
         this.itemCondition = builder.itemCondition;
         this.status = builder.status;
         this.name = builder.name;
+        this.seller = builder.seller;
     }
 
     public void setPrice(int newPrice) {
@@ -45,10 +51,13 @@ public class Product implements Serializable {
         private ItemCondition itemCondition = ItemCondition.NEW;
         private Status status = Status.AVAILABLE;
 
-        public Builder(String name, int price, int productionYear) {
+        private String seller;
+
+        public Builder(String name, int price, int productionYear, String seller) {
             this.name = name;
             this.price = price;
             this.productionYear = productionYear;
+            this.seller = seller;
         }
 
         public Builder color(String color) {

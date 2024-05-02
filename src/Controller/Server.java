@@ -42,13 +42,13 @@ public class Server extends Thread {
     }
     // To test that the products can be found
     public void testProductArray() {
-        Product product1 = new Product.Builder("iphone", 1000, 2022)
+        Product product1 = new Product.Builder("iphone", 1000, 2022, "john")
                 .color("Black")
                 .condition(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
 
-        Product product2 = new Product.Builder("mac", 2000, 2021)
+        Product product2 = new Product.Builder("mac", 2000, 2021, "john")
                 .color("Silver")
                 .condition(ItemCondition.USED)
                 .status(Status.SOLD)

@@ -76,13 +76,13 @@ public class Client {
     }
 
     private void showCart() {
-        Product product = new Product.Builder("MacBook", 100, 2024)
+        Product product = new Product.Builder("MacBook", 100, 2024, username)
                 .color("Red")
                 .condition(ItemCondition.USED)
                 .status(Status.SOLD)
                 .build();
         addToCart(product);
-        product = new Product.Builder("Iphone", 100, 2024)
+        product = new Product.Builder("Iphone", 100, 2024, username)
                 .color("Red")
                 .condition(ItemCondition.USED)
                 .status(Status.AVAILABLE)
@@ -184,7 +184,7 @@ public class Client {
     }
 
     private Product createProduct() {
-        Product product = new Product.Builder("Sample Product", 100, 2024)
+        Product product = new Product.Builder("Sample Product", 100, 2024, username)
                 .color("Red")
                 .condition(ItemCondition.USED)
                 .status(Status.SOLD)
