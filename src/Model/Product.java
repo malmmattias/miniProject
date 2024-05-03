@@ -10,6 +10,7 @@ public class Product implements Serializable {
     private Status status;
     private String name;
     private String seller;
+    private String buyer = " ";
 
 
     public String getName() {
@@ -22,6 +23,10 @@ public class Product implements Serializable {
 
     public String getSeller() {
         return seller;
+    }
+
+    public void setBuyer(String buyer) {
+        this.buyer = buyer;
     }
 
     private Product(Builder builder) {
