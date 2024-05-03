@@ -8,12 +8,14 @@ public class SearchProductRequest extends Request {
 private String productName ="";
 private int min = 0, max = 20000000;
 private ItemCondition itemCondition = ItemCondition.USED;
-    public SearchProductRequest(String productName, int min, int max, ItemCondition condition) {
+private Boolean filtered;
+    public SearchProductRequest(String productName, int min, int max, ItemCondition condition, Boolean filtered) {
 
         this.productName = productName;
         this.min = min;
         this.max = max;
         this.itemCondition = condition;
+        this.filtered = filtered;
 
     }
 
@@ -29,6 +31,10 @@ private ItemCondition itemCondition = ItemCondition.USED;
 
     public int getMax() {
         return max;
+    }
+
+    public boolean getFiltered(){
+        return filtered;
     }
 
     public ItemCondition getItemCondition(){

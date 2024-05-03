@@ -13,17 +13,16 @@ import java.util.Map;
 import java.util.Objects;
 
 import Model.Requests.*;
-import com.google.gson.Gson;
 
 public class Server extends Thread {
-    private Map<String, String> loginCredentials = new HashMap<>();
-    private Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
+    private final Map<String, String> loginCredentials = new HashMap<>();
+    private final Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
     private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
-    private HashMap<String, ArrayList<Product>> purchaseReq= new HashMap<>();
+    private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
     private ArrayList<Product> productsList;
 
     //Change this later
-    private int port = 1441;
+    private final int port = 1441;
 
     public Server() {
 
@@ -41,6 +40,7 @@ public class Server extends Thread {
 
 
     }
+
     // To test that the products can be found
     public void testProductArray() {
         Product product1 = new Product.Builder("iphone", 1000, 2022, "john")
@@ -149,9 +149,8 @@ public class Server extends Thread {
                         //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                         Request request = (Request) is.readObject();
 
-                        if (request instanceof SellProductRequest) {
+                        if (request instanceof SellProductRequest spr) {
                             System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                            SellProductRequest spr = (SellProductRequest) request;
                             int sizeBfr = products.size();
                             Product product = spr.getProduct();
                             products.add(product);
@@ -168,30 +167,24 @@ public class Server extends Thread {
 
                         }
 
-                        if (request instanceof SearchProductRequest) {
-                            System.out.println("JAG NÅDDE SERVERN");
-                            SearchProductRequest spr = (SearchProductRequest) request;
+                        if (request instanceof SearchProductRequest spr) {
                             String productName = spr.getProductName().toUpperCase();
                             productsList = new ArrayList<>();
                             boolean productFound = false;
 
-                            for (int i = 0; i < products.size(); i++) {
-                                Product product = products.get(i);
-                                if (productName.contains(product.getName().toUpperCase())
-                                && (product.getPrice() >= spr.getMin() && product.getPrice() <= spr.getMax())
-                                && (spr.getItemCondition().equals(product.getItemCondition()))) {
-                                    System.out.println("Product found: " + product.getName());
-                                    productsList.add(product);
-                                    productFound = true;
-                                }
+                            if (!spr.getFiltered()) {
+                               productsList = createUnfilteredSearch(productName);
+                                productFound = !productsList.isEmpty();
+                            } else if (spr.getFiltered()){
+                               productsList = createFilteredSearch(spr, productName);
+                                productFound = !productsList.isEmpty();
                             }
 
-                            if(productFound){
-                                System.out.println("NU SKICKAR JAG LISTFAN");
+
+                            if (productFound) {
                                 os.writeObject(productFound);
                                 os.writeObject(productsList);
                             } else {
-                                System.out.println("NU BLEV DET FALSE");
                                 os.writeObject(productFound);
                             }
 
@@ -200,9 +193,6 @@ public class Server extends Thread {
 
                             products.toStringMethod();
                             System.out.println("Update from search request");
-
-
-
 
 
                         }
@@ -245,6 +235,30 @@ public class Server extends Thread {
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
+            private ArrayList<Product> createUnfilteredSearch(String productName) {
+                for (int i = 0; i < products.size(); i++) {
+                    Product product = products.get(i);
+                    if (productName.contains(product.getName().toUpperCase())) {
+                        System.out.println("Product found: " + product.getName());
+                        productsList.add(product);
+                    }
+                }
+                return productsList;
+            }
+
+            private ArrayList<Product> createFilteredSearch(SearchProductRequest spr, String productName){
+                for (int i = 0; i < products.size(); i++) {
+                    Product product = products.get(i);
+                    if (productName.contains(product.getName().toUpperCase())
+                            && (product.getPrice() >= spr.getMin() && product.getPrice() <= spr.getMax())
+                            && (spr.getItemCondition().equals(product.getItemCondition()))) {
+                        System.out.println("Product found: " + product.getName());
+                        productsList.add(product);
+                    }
+                }
+                return productsList;
             }
         }
 

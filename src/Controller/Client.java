@@ -154,23 +154,19 @@ public class Client {
         String productName = scanner.nextLine();
         System.out.println("Would you like to filter the search? y/n");
         response = scanner.nextLine();
+
         if (response.equals("y")) {
             System.out.println("Enter minimum price range");
             minPrice = scanner.nextInt();
             System.out.println("Enter maximum price range");
             maxPrice = scanner.nextInt();
-
             ItemCondition searchCondition = getItemCondition();
-
-            currRequest = new SearchProductRequest(productName, minPrice, maxPrice, searchCondition);
-
+            Boolean filtered = true;
+            currRequest = new SearchProductRequest(productName, minPrice, maxPrice, searchCondition, filtered);
             System.out.println("Jag når hit");
-        }
-        if (response.equals("n")) {
-            //itemCondition = itemCondition.USED;
-            currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition);
-            //currRequest = new SearchProductRequest(productName);
-
+        } else {
+            Boolean filtered = false;
+            currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition, filtered);
             System.out.println("Jag nådde elseblocket");
         }
 
