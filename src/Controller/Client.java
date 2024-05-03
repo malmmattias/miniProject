@@ -146,6 +146,16 @@ public class Client {
 
     private void registerInterest() {
         System.out.println("Select Category to register interest in:");
+        scanner.nextLine();
+        String interest = scanner.nextLine();
+        currRequest = new RegisterInterestRequest(interest);
+        currRequest.setUsername(username);
+        try {
+            oos.writeObject(currRequest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void searchProduct() {
@@ -445,6 +455,7 @@ public class Client {
      * Method to clear the console window by printing a dotted line.
      */
     public void clearConsole() {
+        System.out.println();
         for (int i = 0; i < 100; i++) {
             System.out.print(".");
         }

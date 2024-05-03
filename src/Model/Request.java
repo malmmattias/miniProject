@@ -26,7 +26,7 @@ public abstract class Request implements Serializable {
     public void setItemName(String itemName){
         this.itemName = itemName;
     }
-    public String getItemName(){
+    public String getInterest(){
         return itemName;
     }
 }

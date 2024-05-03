@@ -7,15 +7,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import Model.Requests.*;
 
 public class Server extends Thread {
     private final Map<String, String> loginCredentials = new HashMap<>();
+    private final Map<String, ArrayList<String>> userInterests = new HashMap<>();
     private final Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
     private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
     private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
@@ -35,8 +33,8 @@ public class Server extends Thread {
         testProductArray();
 
 
-        addToPurchaseHistory("john", "iphone");
-        addToPurchaseHistory("john", "macBook");
+        extendMap("john", "iphone", purchaseHistory);
+        extendMap("john", "macBook", purchaseHistory);
 
 
     }
@@ -68,10 +66,19 @@ public class Server extends Thread {
         purchaseHistory.put(name, new ArrayList<>());
     }
 
-    private void addToPurchaseHistory(String name, String newItem) {
-        ArrayList<String> purchases = purchaseHistory.get(name);
-        purchases.add(newItem);
-        purchaseHistory.put(name, purchases);
+    /**
+     * This can be used to modify a map whenever the key is a string and the value is an ArrayList of strings.
+     * @param name the key
+     * @param newListItem the ArrayList
+     * @param map the map to extend
+     */
+    private void extendMap(String name, String newListItem, Map<String, ArrayList<String>> map) {
+        ArrayList<String> purchases = map.get(name);
+        if (purchases == null) {
+            purchases = new ArrayList<>();
+        }
+        purchases.add(newListItem);
+        map.put(name, purchases);
     }
 
     public ArrayList<String> getPurchaseHistory(String usrName) {
@@ -150,7 +157,7 @@ public class Server extends Thread {
                         Request request = (Request) is.readObject();
 
                         if (request instanceof SellProductRequest spr) {
-                            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                            System.out.println("Server: SellProductRequest");
                             int sizeBfr = products.size();
                             Product product = spr.getProduct();
                             products.add(product);
@@ -165,6 +172,16 @@ public class Server extends Thread {
                                 os.writeObject(false);
                             }
 
+                            checkForMatchingInterests(product);
+
+                        }
+
+                        if (request instanceof RegisterInterestRequest){
+                            System.out.println("Server: RegisterInterestRequest");
+                            String username = request.getUsername();
+                            String interest = request.getInterest();
+                            extendMap(username, interest, userInterests);
+                            System.out.println("Server: "+username+" has registered interest "+interest);
                         }
 
                         if (request instanceof SearchProductRequest spr) {
@@ -237,6 +254,44 @@ public class Server extends Thread {
                 }
             }
 
+            /*
+            private boolean productNameExists(String newProductName) {
+                for(int i = 0; i < products.size(); i++) {
+                    String productName = products.get(i).getName();
+                    if (Objects.equals(productName, newProductName)) {
+                        return true;
+                    } //Detta är en tillfällig lösning som söker används för att
+                    //verifigera om ny sell request matchar någons intressen
+                    //Den bör slås ihop med SearchProductRequest s
+                    //Martin
+                }
+                return false;
+            }*/
+
+            private void checkForMatchingInterests(Product product) {
+                String name = product.getName().toUpperCase();
+                List<String> list = getUsernamesWithInterest(name);
+                System.out.println("Server: Selling a new product, here's all users with matching interests");
+                for (String s : list){
+                    System.out.println("-" + s);
+                }
+            }
+
+            public List<String> getUsernamesWithInterest(String interest) {
+                List<String> matchingUsernames = new ArrayList<>();
+
+                for (Map.Entry<String, ArrayList<String>> entry : userInterests.entrySet()) {
+                    String username = entry.getKey();
+                    ArrayList<String> userInterestsList = entry.getValue();
+
+                    if (userInterestsList.contains(interest)) {
+                        matchingUsernames.add(username);
+                    }
+                }
+                //Fortsätta här imorgon
+                return matchingUsernames;
+            }
+
             private ArrayList<Product> createUnfilteredSearch(String productName) {
                 for (int i = 0; i < products.size(); i++) {
                     Product product = products.get(i);
@@ -288,6 +343,14 @@ public class Server extends Thread {
             }
         }
 
+    }
+
+    public void clearConsole() {
+        System.out.println();
+        for (int i = 0; i < 100; i++) {
+            System.out.print(".");
+        }
+        System.out.println();
     }
 }
 
