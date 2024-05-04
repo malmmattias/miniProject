@@ -27,7 +27,7 @@ public class Client {
     private String lastName;
     private Date birthDate;
     private String email;
-    private String username;
+    private final String username;
     private String password;
     private String nothing;
     Scanner scanner = new Scanner(System.in);
@@ -54,7 +54,7 @@ public class Client {
         }
 
 
-        askLoginData();
+        username = askLoginData();
 
 
 
@@ -83,6 +83,7 @@ public class Client {
                 while(true){
                     //System.out.println("Waiting for notification");
                     String object = (String) nois.readObject();
+                    System.out.println(object);
 
                 }
 
@@ -145,7 +146,15 @@ public class Client {
                 for (Product p : buyerRequests) {
 
                     permission = STR."PERMISSION: Do you, \{p.getSeller()}, agrre to sell product \{p.getName()} for \{p.getPrice()}to \{p.getBuyer()}? y/n";
-                    p.setStatus(Status.PENDING);
+
+                    System.out.println(permission);
+                    String inpt =  scanner.nextLine();
+
+                    if(Objects.equals(inpt, "y")) {
+                        p.setStatus(Status.PENDING);
+                    } else{
+                        System.out.println("You rejected the transaction");
+                    }
                     //System.out.println(p.toString2());
                 }
             } else {
@@ -311,15 +320,16 @@ public class Client {
                     System.out.println("Product found!" + "\n");
                     clearConsole();
                     o = ois.readObject();
-                    if (o instanceof ArrayList) {
-                        ArrayList<Product> productsList = (ArrayList) o;
+                    ArrayList<Product> productsList = (ArrayList) o;
+
+                    //if (o instanceof ArrayList) {
                         int count = 1;
                         for (Product a : productsList) {
                             System.out.println(count++ + ". " + a.toString2());
                         }
-                    }
+                    //}
 
-                    addToCartOption();
+                    addToCartOption(productsList);
 
                 } else {
                     System.out.println("Product not found!" + "\n");
@@ -334,10 +344,11 @@ public class Client {
 
     }
 
-    private void addToCartOption() throws IOException {
+    private void addToCartOption(ArrayList<Product> products) throws IOException {
         System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
         String response = scanner.nextLine();
-        oos.writeObject(response);
+        int response2 = Integer.parseInt(response) -1;
+        oos.writeObject(response2);
     }
 
     private ItemCondition getItemCondition() {
@@ -376,7 +387,7 @@ public class Client {
         Product product = createProduct();
         currRequest = new SellProductRequest(product, username);
         try {
-            System.out.println("Im printing");
+            //System.out.println("Im printing");
             oos.writeObject(currRequest);
             boolean verification = (boolean) ois.readObject();
             if (verification) {
@@ -471,8 +482,9 @@ public class Client {
         }
     }
 
-    private void askLoginData() {
+    private String askLoginData() {
         System.out.println("Are you a new user? y/n");
+        String localized;
         String s = scanner.nextLine();
         if (Objects.equals(s, "y")) {
             System.out.println("Enter firstname: ");
@@ -482,18 +494,20 @@ public class Client {
             System.out.println("Enter email: ");
             email = scanner.nextLine();
             System.out.println("Enter username: ");
-            username = scanner.nextLine();
+            localized = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
             enterBirthDate();
             addUserToServer();
         } else {
             System.out.println("Enter username: ");
-            username = scanner.nextLine();
+            localized = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
-            verifyLogin(username, password);
+            localized = verifyLogin(localized, password);
         }
+
+        return localized;
 
     }
 
@@ -510,7 +524,7 @@ public class Client {
         System.out.println("Your login credentials are now saved on the server!");
     }
 
-    private void verifyLogin(String usrName, String psWord) {
+    private String verifyLogin(String usrName, String psWord) {
         currRequest = new VerifyUserRequest(usrName, psWord, username);
         boolean verification;
 
@@ -522,9 +536,10 @@ public class Client {
         }
         if (verification) {
             System.out.println("Welcome");
+            return usrName;
         } else {
             System.out.println("Wrong!");
-            askLoginData();
+            return "";
         }
     }
 

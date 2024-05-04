@@ -44,7 +44,7 @@ public class ResizableProductsArray<T> {
         return array;
     }
 
-    public int findIndex(T element) {
+    public int findAndReplace(T element) {
         for (int i = 0; i < size; i++) {
             if (array[i].equals(element)) {
                 return i;

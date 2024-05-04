@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Product implements Serializable {
     private int price;
@@ -34,8 +35,13 @@ public class Product implements Serializable {
         return seller;
     }
 
-    public void setBuyer(String buyer) {
-        this.buyer = buyer;
+    public void setBuyer(String b) {
+        if (Objects.equals(b, seller)){
+            System.out.println("Buyer can be the same as seller");
+        } else {
+            this.buyer = b;
+        }
+
     }
 
     private Product(Builder builder) {
@@ -46,7 +52,7 @@ public class Product implements Serializable {
         this.status = builder.status;
         this.name = builder.name;
         this.seller = builder.seller;
-        this.buyer = builder.seller;
+        this.buyer = builder.buyer;
     }
 
     public void setPrice(int newPrice) {
@@ -156,7 +162,7 @@ public class Product implements Serializable {
 
         return name + ", " + price + "kr, " + "year "
                 + yearOfProduction + ", " + color + ", itemCondition " + itemCondition + ", status: "
-                + status + "  " + buyer + seller + "\n" ;
+                + status + "  " + ", buery " + buyer + ",seller " + seller + "\n" ;
     }
 
 }

@@ -40,8 +40,8 @@ public class Server extends Thread {
         testProductArray();
 
 
-        extendMap("john", "iphone", purchaseHistory);
-        extendMap("john", "macBook", purchaseHistory);
+        extendMap("john", "anItemJohnBought", purchaseHistory);
+        //extendMap("john", "macBook", purchaseHistory);
 
 
     }
@@ -217,10 +217,10 @@ public class Server extends Thread {
                         //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                         Request request = (Request) is.readObject();
 
-                        if (request instanceof SellProductRequest spr) {
+                        if (request instanceof SellProductRequest sellpr) {
                             //System.out.println("Server: SellProductRequest");
                             int sizeBfr = products.size();
-                            Product product = spr.getProduct();
+                            Product product = sellpr.getProduct();
                             products.add(product);
 
                             products.toStringMethod();
@@ -233,7 +233,7 @@ public class Server extends Thread {
                                 os.writeObject(false);
                             }
 
-                            String productName = spr.getProduct().getName();
+                            String productName = sellpr.getProduct().getName();
                             String notification = "Notification: "+ productName + " has been added to the products list";
 
                             //checkForMatchingInterests(product);
@@ -261,6 +261,9 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof SearchProductRequest spr) {
+                            String userNameImportant = spr.getUsername();
+                            //System.out.println("SEARCH " + spr.getUsername());
+
                             String productName = spr.getProductName().toUpperCase();
                             productsList = new ArrayList<>();
                             boolean productFound = false;
@@ -281,22 +284,40 @@ public class Server extends Thread {
                                 os.flush();
 
 
-                                String data = (String) is.readObject();
-                                int clientChoice = Integer.parseInt (data) - 1;
+                                //Product p = (Product) is.readObject();
+                                //p.setBuyer(userNameImportant);
+
+                                int clientChoiceIndexed = (int) is.readObject();
+
+                                int i = products.findAndReplace(productsList.get(clientChoiceIndexed));
+                                //System.out.println(i+"Q");
+                                productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
+
+
+
+                                //int clientChoice = Integer.parseInt (data) - 1;
+                                //System.out.println(p.toString2());
+
+
 
                                 //System.out.println("CCC" + clientChoice);
 
+                                /*
                                 if (clientChoice > -1) { //above zero means the client decided to buy a product
 
                                     Product purchase = productsList.get(clientChoice);
+                                    purchase.toString2();
+                                    purchase.setBuyer(userNameImportant);
 
-                                    int i = products.findIndex(purchase);
+                                    //int i = products.findIndex(purchase);
 
-                                    String username = request.getUsername();
-                                    purchase.setBuyer(username);
+                                    //products.get(i).setBuyer(userNameImportant);
 
-                                    products.overwrite(i, purchase);
-                                }
+                                    //String username = request.getUsername();
+                                    //purchase.setBuyer(username);
+
+                                    //products.overwrite(i, purchase);
+                                }*/
 
                                     /*
                                     boolean permissionGranted = askPermission(request.getUsername(), purchase);
@@ -335,6 +356,7 @@ public class Server extends Thread {
                                     Product product = products.get(i);
 
                                     if (product.getBuyer() != null
+                                            && product.getBuyer() != "none"
                                             && product.getSeller().equals(username)) {
                                         //System.out.println("LK" + product.getBuyer());
                                         buyerRequests.add(product);
@@ -357,6 +379,8 @@ public class Server extends Thread {
                                             String sellerName = product.getSeller();
 
                                             completeTransaction(buyerName, sellerName, product);
+
+                                            extendMap(buyerName, product.getName(), purchaseHistory);
 
                                             product.setStatus(Status.SOLD);
                                         }
@@ -407,7 +431,7 @@ public class Server extends Thread {
                             boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
 
                             if(verification) {
-                                notification_oos.put(usrName, notiOS); //Save oos for notifications channel
+                                //notification_oos.put(usrName, notiOS); //Save oos for notifications channel
                             }
 
                             os.writeObject(verification);
@@ -432,12 +456,17 @@ public class Server extends Thread {
                 //System.out.println(salesConfirmation);
 
                 ObjectOutputStream channel = notification_oos.get(buyerName);
-                channel.writeObject(salesConfirmation);
-                channel.flush();
+                if (channel!=null) {
+                    channel.writeObject(salesConfirmation);
+                    channel.flush();
+                }
 
                 ObjectOutputStream channel2 = notification_oos.get(sellerName);
-                channel2.writeObject(salesConfirmation);
-                channel2.flush();
+                if (channel2!=null) {
+                    channel2.writeObject(salesConfirmation);
+                    channel2.flush();
+                }
+
             }
 
             private boolean askPermission(String usernameBuyer, Product purchase) {
@@ -517,12 +546,12 @@ public class Server extends Thread {
                 return productsList;
             }
 
-            private ArrayList<Product> createFilteredSearch(SearchProductRequest spr, String productName){
+            private ArrayList<Product> createFilteredSearch(SearchProductRequest spr2, String productName){
                 for (int i = 0; i < products.size(); i++) {
                     Product product = products.get(i);
                     if (productName.contains(product.getName().toUpperCase())
-                            && (product.getPrice() >= spr.getMin() && product.getPrice() <= spr.getMax())
-                            && (spr.getItemCondition().equals(product.getItemCondition()))) {
+                            && (product.getPrice() >= spr2.getMin() && product.getPrice() <= spr2.getMax())
+                            && (spr2.getItemCondition().equals(product.getItemCondition()))) {
                         ////System.out.println("Product found: " + product.getName());
                         productsList.add(product);
                     }
