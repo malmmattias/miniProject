@@ -20,6 +20,7 @@ public class Server extends Thread {
     private ArrayList<Product> productsList;
     private Observer interestsObserver = new Observer();
     private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
+    private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
 
     //Change this later
     private final int port = 1441;
@@ -146,6 +147,7 @@ public class Server extends Thread {
 
                 System.out.println("YEEreeeeeEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSS!");
                 notification_oos.put(username, nos);
+                notification_ois.put(username, nis);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (ClassNotFoundException e) {
@@ -275,15 +277,36 @@ public class Server extends Thread {
                             if (productFound) {
                                 os.writeObject(productFound);
                                 os.writeObject(productsList);
+
+                                os.flush();
+
+                                String data = (String) is.readObject();
+                                int clientChoice = Integer.parseInt (data) - 1;
+
+                                System.out.println("CCC" + clientChoice);
+
+                                if (clientChoice > -1){ //above zero means the client decided to buy a product
+
+                                    Product purchase = productsList.get(clientChoice);
+
+                                    boolean permissionGranted = askPermission(request.getUsername(), purchase);
+
+                                    System.out.println("PQ " + permissionGranted);
+                                    int i = products.findIndex(purchase);
+
+                                    purchase.setStatus(Status.SOLD);
+
+                                    products.overwrite(i, purchase);
+                                }
+
+
+
                             } else {
                                 os.writeObject(productFound);
                             }
 
                             productsList.clear();
                             os.flush();
-
-                            products.toStringMethod();
-                            System.out.println("Update from search request");
 
 
                         }
@@ -330,6 +353,33 @@ public class Server extends Thread {
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
+            private boolean askPermission(String usernameBuyer, Product purchase) {
+                String usernameSeller = purchase.getSeller();
+
+                String permission = STR."PERMISSION: Do you, \{usernameSeller}, agrre to sell product \{purchase.getName()} for \{purchase.getPrice()}to \{usernameBuyer}? y/n";
+
+                boolean permissionGranted = false;
+
+
+                try {
+                    ObjectOutputStream objectz = notification_oos.get(usernameSeller);
+                    objectz.writeObject(permission);
+                    objectz.flush();
+
+                    String response = (String) notification_ois.get(usernameSeller).readObject();
+
+                    if(response.equals("y")){
+                        permissionGranted = true;
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                return permissionGranted;
             }
 
             /*
@@ -388,7 +438,7 @@ public class Server extends Thread {
                     if (productName.contains(product.getName().toUpperCase())
                             && (product.getPrice() >= spr.getMin() && product.getPrice() <= spr.getMax())
                             && (spr.getItemCondition().equals(product.getItemCondition()))) {
-                        System.out.println("Product found: " + product.getName());
+                        //System.out.println("Product found: " + product.getName());
                         productsList.add(product);
                     }
                 }

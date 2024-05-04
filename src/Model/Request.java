@@ -7,6 +7,10 @@ public abstract class Request implements Serializable {
     private String passWord;
     private String itemName;
 
+    public Request(String username) {
+        this.username = username;
+    }
+
     public String getUsername() {
         return username;
     }

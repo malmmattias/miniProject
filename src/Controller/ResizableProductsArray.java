@@ -1,7 +1,7 @@
 package Controller;
 
 public class ResizableProductsArray<T> {
-    private static final int DEFAULT_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 1;
     private Object[] array;
     private int size;
 
@@ -42,6 +42,24 @@ public class ResizableProductsArray<T> {
 
     private Object[] getAllProducts() {
         return array;
+    }
+
+    public int findIndex(T element) {
+        for (int i = 0; i < size; i++) {
+            if (array[i].equals(element)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void overwrite(int i, T element){
+        array[i] = element;
+    }
+
+
+    public int getSize() {
+        return size;
     }
 
 }

@@ -11,6 +11,7 @@ public class Product implements Serializable {
     private String name;
     private String seller;
     private String buyer = " ";
+    private int id;
 
 
     public String getName() {
@@ -113,6 +114,14 @@ public class Product implements Serializable {
         this.status = status;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
 
@@ -123,6 +132,12 @@ public class Product implements Serializable {
                 "   itemCondition: " + itemCondition + "\n" +
                 "   status: " + status + "\n" +
                 "   name: " + name + "\n";
+    }
+
+    public String toString2(){
+
+        return name + ", " + price + "kr, " + "year "
+                + yearOfProduction + ", " + color + ", itemCondition " + itemCondition + ", status: " + status + "\n" ;
     }
 
 }

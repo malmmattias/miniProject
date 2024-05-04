@@ -9,8 +9,8 @@ private String productName ="";
 private int min = 0, max = 20000000;
 private ItemCondition itemCondition = ItemCondition.USED;
 private Boolean filtered;
-    public SearchProductRequest(String productName, int min, int max, ItemCondition condition, Boolean filtered) {
-
+    public SearchProductRequest(String productName, int min, int max, ItemCondition condition, Boolean filtered, String username) {
+super(username);
         this.productName = productName;
         this.min = min;
         this.max = max;

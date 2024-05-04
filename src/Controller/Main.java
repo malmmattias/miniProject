@@ -13,6 +13,8 @@ public class Main {
         }
 
         Client client = new Client();
+        //Client client2 = new Client();
+
 
     }
 

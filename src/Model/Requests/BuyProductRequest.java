@@ -8,7 +8,8 @@ import java.util.ArrayList;
 public class BuyProductRequest extends Request {
     private ArrayList<Product> products;
 
-    public BuyProductRequest(ArrayList<Product> cart) {
+    public BuyProductRequest(ArrayList<Product> cart, String username) {
+        super(username);
         products = cart;
     }
 

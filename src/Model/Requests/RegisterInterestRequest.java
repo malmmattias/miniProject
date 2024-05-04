@@ -5,7 +5,8 @@ import Model.Request;
 public class RegisterInterestRequest extends Request {
     private String interest;
 
-    public RegisterInterestRequest(String interest) {
+    public RegisterInterestRequest(String interest, String username) {
+        super(username);
         this.interest = interest;
     }
 
