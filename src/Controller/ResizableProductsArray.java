@@ -40,7 +40,7 @@ public class ResizableProductsArray<T> {
         System.out.println("NUmber of products " + size);
     }
 
-    private Object[] getAllProducts() {
+    public Object[] getAllProducts() {
         return array;
     }
 

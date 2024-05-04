@@ -48,23 +48,23 @@ public class Server extends Thread {
 
     // To test that the products can be found
     public void testProductArray() {
-        Product product1 = new Product.Builder("iphone", 1000, 2022, "john")
+        Product product1 = new Product.Builder("iphone", 1000, 2022, "john", "none")
                 .color("Black")
                 .itemCondidtion(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
 
-        Product product2 = new Product.Builder("mac", 2000, 2021, "john")
+        Product product2 = new Product.Builder("mac", 2000, 2021, "john", "none")
                 .color("Silver")
                 .itemCondidtion(ItemCondition.USED)
-                .status(Status.SOLD)
+                .status(Status.AVAILABLE)
                 .build();
 
         products.add(product1);
         products.add(product2);
-        System.out.println("Products in the array:");
+        //System.out.println("Products in the array:");
         for (int i = 0; i < products.size(); i++) {
-            System.out.println(products.get(i));
+            //System.out.println(products.get(i));
         }
     }
 
@@ -93,11 +93,11 @@ public class Server extends Thread {
             try {
                 ServerSocket nServerSocket = new ServerSocket(8000);
 
-                System.out.println("Server2: skapad");
+                //System.out.println("Server2: skapad");
 
                 while(true){
                     Socket nSocket = nServerSocket.accept();
-                    System.out.println("Server2: accept");
+                    //System.out.println("Server2: accept");
 
                     NotificationThread nt = new NotificationThread(nSocket);
                     new Thread(nt).start();
@@ -119,7 +119,7 @@ public class Server extends Thread {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
 
-            System.out.println("Server: skapad");
+            //System.out.println("Server: skapad");
             while (true) {
                 Socket socket = serverSocket.accept();
 
@@ -145,7 +145,7 @@ public class Server extends Thread {
             try {
                 String username = (String) nis.readObject();
 
-                System.out.println("YEEreeeeeEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSS!");
+                //System.out.println("YEEreeeeeEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSS!");
                 notification_oos.put(username, nos);
                 notification_ois.put(username, nis);
             } catch (IOException e) {
@@ -211,20 +211,20 @@ public class Server extends Thread {
             private synchronized void reading() {
                 try {
                     while (isRunning) {
-                        System.out.println("Server: Client connected");
+                        //System.out.println("Server: Client connected");
 
                         //Gson gson = new Gson();
                         //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                         Request request = (Request) is.readObject();
 
                         if (request instanceof SellProductRequest spr) {
-                            System.out.println("Server: SellProductRequest");
+                            //System.out.println("Server: SellProductRequest");
                             int sizeBfr = products.size();
                             Product product = spr.getProduct();
                             products.add(product);
 
                             products.toStringMethod();
-                            System.out.println("Update from sellrequest");
+                            //System.out.println("Update from sellrequest");
 
                             int sizeAftr = products.size();
                             if (sizeAftr > sizeBfr) {
@@ -247,16 +247,16 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof RegisterInterestRequest){
-                            System.out.println("Server: RegisterInterestRequest");
+                            //System.out.println("Server: RegisterInterestRequest");
                             String username = request.getUsername();
                             String interest = request.getInterest();
                             interestsObserver.subscribe(username, interest);
-                            System.out.println("Server: "+username+" has registered interest "+interest);
+                            //System.out.println("Server: "+username+" has registered interest "+interest);
 
                             /*
                             ArrayList<String> usernames = interestsObserver.notify("mac");
                             for (String user : usernames) {
-                                System.out.println(user);
+                                //System.out.println(user);
                             }*/
                         }
 
@@ -280,24 +280,36 @@ public class Server extends Thread {
 
                                 os.flush();
 
+
                                 String data = (String) is.readObject();
                                 int clientChoice = Integer.parseInt (data) - 1;
 
-                                System.out.println("CCC" + clientChoice);
+                                //System.out.println("CCC" + clientChoice);
 
-                                if (clientChoice > -1){ //above zero means the client decided to buy a product
+                                if (clientChoice > -1) { //above zero means the client decided to buy a product
 
                                     Product purchase = productsList.get(clientChoice);
 
+                                    int i = products.findIndex(purchase);
+
+                                    String username = request.getUsername();
+                                    purchase.setBuyer(username);
+
+                                    products.overwrite(i, purchase);
+                                }
+
+                                    /*
                                     boolean permissionGranted = askPermission(request.getUsername(), purchase);
 
-                                    System.out.println("PQ " + permissionGranted);
+                                    //System.out.println("PQ " + permissionGranted);
                                     int i = products.findIndex(purchase);
 
                                     purchase.setStatus(Status.SOLD);
 
                                     products.overwrite(i, purchase);
-                                }
+                                    }*/
+
+
 
 
 
@@ -309,6 +321,65 @@ public class Server extends Thread {
                             os.flush();
 
 
+                        }
+
+                        if (request instanceof CheckPurchaseRequests cpr) {
+
+                            //if (!cpr.isVerified()) {
+
+                                String username = request.getUsername();
+
+                                ArrayList<Product> buyerRequests = new ArrayList<>();
+
+                                for (int i = 0; i < products.size(); i++) {
+                                    Product product = products.get(i);
+
+                                    if (product.getBuyer() != null
+                                            && product.getSeller().equals(username)) {
+                                        //System.out.println("LK" + product.getBuyer());
+                                        buyerRequests.add(product);
+
+                                    }
+                                }
+
+
+
+                                os.writeObject(buyerRequests);
+                                os.flush();
+
+                                ArrayList<Product> response = (ArrayList<Product>) is.readObject();
+
+                                if(!response.isEmpty()) {
+                                    for (Product product : response) {
+                                        if (product.getStatus().equals(Status.PENDING)) {
+
+                                            String buyerName = product.getBuyer();
+                                            String sellerName = product.getSeller();
+
+                                            completeTransaction(buyerName, sellerName, product);
+
+                                            product.setStatus(Status.SOLD);
+                                        }
+
+                                    }
+                                }
+
+                            //}
+
+                            if(11==28) {
+
+                                for (Product product : cpr.getBuyerRequests()) {
+                                    product.toString2();
+
+                                    if (product.getStatus().equals(Status.PENDING)) {
+
+                                        String buyerName = product.getBuyer();
+                                        String sellerName = product.getSeller();
+
+                                        completeTransaction(buyerName, sellerName, product);
+                                    }
+                                }
+                            }
                         }
 
                         if (request instanceof BuyProductRequest) {
@@ -353,6 +424,20 @@ public class Server extends Thread {
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
+            private void completeTransaction(String buyerName, String sellerName, Product product) throws IOException {
+                String salesConfirmation = STR."Congratulations transaction has been completed. From \{sellerName} to \{buyerName} for \{product.getName()} for \{product.getPrice()} kr";
+
+                //System.out.println(salesConfirmation);
+
+                ObjectOutputStream channel = notification_oos.get(buyerName);
+                channel.writeObject(salesConfirmation);
+                channel.flush();
+
+                ObjectOutputStream channel2 = notification_oos.get(sellerName);
+                channel2.writeObject(salesConfirmation);
+                channel2.flush();
             }
 
             private boolean askPermission(String usernameBuyer, Product purchase) {
@@ -400,9 +485,9 @@ public class Server extends Thread {
             private void checkForMatchingInterests(Product product) {
                 String name = product.getName().toUpperCase();
                 List<String> list = getUsernamesWithInterest(name);
-                System.out.println("Server: Selling a new product, here's all users with matching interests");
+                //System.out.println("Server: Selling a new product, here's all users with matching interests");
                 for (String s : list){
-                    System.out.println("-" + s);
+                    //System.out.println("-" + s);
                 }
             }*/
 
@@ -425,7 +510,7 @@ public class Server extends Thread {
                 for (int i = 0; i < products.size(); i++) {
                     Product product = products.get(i);
                     if (productName.contains(product.getName().toUpperCase())) {
-                        System.out.println("Product found: " + product.getName());
+                        //System.out.println("Product found: " + product.getName());
                         productsList.add(product);
                     }
                 }
@@ -438,7 +523,7 @@ public class Server extends Thread {
                     if (productName.contains(product.getName().toUpperCase())
                             && (product.getPrice() >= spr.getMin() && product.getPrice() <= spr.getMax())
                             && (spr.getItemCondition().equals(product.getItemCondition()))) {
-                        //System.out.println("Product found: " + product.getName());
+                        ////System.out.println("Product found: " + product.getName());
                         productsList.add(product);
                     }
                 }
@@ -475,11 +560,11 @@ public class Server extends Thread {
     }
 
     public void clearConsole() {
-        System.out.println();
+        //System.out.println();
         for (int i = 0; i < 100; i++) {
-            System.out.print(".");
+            //System.out.print(".");
         }
-        System.out.println();
+        //System.out.println();
     }
 }
 

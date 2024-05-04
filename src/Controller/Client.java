@@ -44,7 +44,7 @@ public class Client {
     public Client() {
         try {
             socket = new Socket(host, port);
-            printString("Client: connected");
+            System.out.println("Client: connected");
             ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
 
@@ -72,7 +72,7 @@ public class Client {
         Thread notificationThread = new Thread(() -> {
             try {
                 Socket nSocket = new Socket(host, 8000);
-                printString("Client: noti connected");
+                //System.out.println("Client: noti connected");
                 ObjectInputStream nois = new ObjectInputStream(nSocket.getInputStream());
                 ObjectOutputStream noos = new ObjectOutputStream(nSocket.getOutputStream());
 
@@ -81,15 +81,9 @@ public class Client {
                 noos.flush();
 
                 while(true){
-                    printString("Waiting for notification");
+                    //System.out.println("Waiting for notification");
                     String object = (String) nois.readObject();
 
-                    if (object.startsWith("PERMISSION")) {
-                        printString(object);
-
-                        noos.writeObject("n");
-                        noos.flush();
-                    }
                 }
 
                 } catch (IOException e) {
@@ -104,14 +98,16 @@ public class Client {
 
     private void menu() {
         clearConsole();
-        printString("Choose what you want to do!");
-        printString("1. Sell product.");
-        printString("2. Search for product.");
-        printString("3. Register interest in product category.");
-        printString("4. Show purchase history.");
-        printString("5. Display cart");
+        System.out.println("Choose what you want to do!");
+        System.out.println("1. Sell product.");
+        System.out.println("2. Search for product.");
+        System.out.println("3. Register interest in product category.");
+        System.out.println("4. Show purchase history.");
+        //System.out.println("5. Display cart");
+        //System.out.println("6. Check purchase requests");
+        System.out.println("5. Check purchase requests");
         int choice = scanner.nextInt();
-        getStringInput();
+        scanner.nextLine();
         switch (choice) {
             case 1:
                 sellProduct();
@@ -126,38 +122,98 @@ public class Client {
                 purchaseHistory();
                 break;
             case 5:
-                showCart();
+                //showCart();
+                checkPurchaseRequests();
+                break;
+            case 6:
+                //checkPurchaseRequests();
                 break;
         }
     }
 
+    private void checkPurchaseRequests() {
+        try {
+            oos.writeObject(new CheckPurchaseRequests(username));
+            oos.flush();
+
+            ArrayList<Product> buyerRequests = (ArrayList<Product>) ois.readObject();
+
+            if (!buyerRequests.isEmpty()) {
+
+                String permission;
+
+                for (Product p : buyerRequests) {
+
+                    permission = STR."PERMISSION: Do you, \{p.getSeller()}, agrre to sell product \{p.getName()} for \{p.getPrice()}to \{p.getBuyer()}? y/n";
+                    p.setStatus(Status.PENDING);
+                    //System.out.println(p.toString2());
+                }
+            } else {
+                System.out.println("You have zero purchase requests");
+            }
+
+            oos.writeObject(buyerRequests);
+            oos.flush();
+
+            /*
+            ConfirmationRequest()
+
+
+
+            if (buyerRequests == null || buyerRequests.isEmpty()) {
+                System.out.println("You have zero requests");
+            } else {
+                for (Product p : buyerRequests) {
+                    // Process each request, e.g., set status, add to seller response
+                    p.setStatus(Status.SOLD);
+                    sellerResponse.add(p);
+                }
+                cpr.setBuyerRequests(sellerResponse);
+                cpr.setVerified(true);
+
+                // Send seller response back to server
+                oos.writeObject(cpr);
+                oos.flush();
+            }*/
+
+        } catch (EOFException e) {
+            // Handle EOFException gracefully (e.g., log the error)
+            System.err.println("EOFException: Error reading object from input stream.");
+            e.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle other IO or class not found exceptions
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private void showCart() {
-        Product product = new Product.Builder("MacBook", 100, 2024, username)
+        Product product = new Product.Builder("MacBook", 100, 2024, username, "none")
                 .color("Red")
                 .itemCondidtion(ItemCondition.USED)
                 .status(Status.SOLD)
                 .build();
         addToCart(product);
-        product = new Product.Builder("Iphone", 100, 2024, username)
+        product = new Product.Builder("Iphone", 100, 2024, username, "none")
                 .color("Red")
                 .itemCondidtion(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
         addToCart(product);
-        printString("Products in your cart:");
+        System.out.println("Products in your cart:");
         for (Product p : cart) {
-            printString(p.getName());
+            System.out.println(p.getName());
         }
-        printString("Do you want to check out or continue shopping?");
-        printString("1. Check out");
-        printString("2. Continue shopping");
+        System.out.println("Do you want to check out or continue shopping?");
+        System.out.println("1. Check out");
+        System.out.println("2. Continue shopping");
         int input = scanner.nextInt();
-        getStringInput();
+        scanner.nextLine();
 
 
         if (input == 1) {
             sendPurchaseRequest(cart);
-            printString("Your purchase request has been sent!");
+            System.out.println("Your purchase request has been sent!");
             clearCart();
         }
     }
@@ -181,16 +237,16 @@ public class Client {
             oos.writeObject(currRequest);
             ArrayList<String> history = (ArrayList<String>) ois.readObject();
             if (history == null) {
-                printString("null");
+                System.out.println("null");
             }
             clearConsole();
             if (history == null || history.isEmpty()) {
-                printString("Your history is empty");
+                System.out.println("Your history is empty");
             } else {
-                printString("Your history");
+                System.out.println("Your history");
                 int counter = 1;
                 for (String str : history) {
-                    printString(counter++ + ". " + str);
+                    System.out.println(counter++ + ". " + str);
                 }
             }
 
@@ -201,9 +257,9 @@ public class Client {
     }
 
     private void registerInterest() {
-        printString("Select Category to register interest in:");
-        getStringInput();
-        String interest = getStringInput();
+        System.out.println("Select Category to register interest in:");
+        scanner.nextLine();
+        String interest = scanner.nextLine();
         currRequest = new RegisterInterestRequest(interest, username);
         currRequest.setUsername(username);
         try {
@@ -215,29 +271,29 @@ public class Client {
     }
 
     private void searchProduct() {
-        printString("Enter product you want to search for: ");
-        String response = getStringInput(); // To clear the scanner bug.
-        String productName = getStringInput();
-        printString("Would you like to filter the search? y/n");
-        response = getStringInput();
+        System.out.println("Enter product you want to search for: ");
+        //String response = scanner.nextLine(); // To clear the scanner bug.
+        String productName = scanner.nextLine();
+        System.out.println("Would you like to filter the search? y/n");
+        String response = scanner.nextLine();
 
         if (response.equals("y")) {
-            printString("Enter minimum price range");
+            System.out.println("Enter minimum price range");
             minPrice = scanner.nextInt();
-            getStringInput();
+            scanner.nextLine();
 
-            printString("Enter maximum price range");
+            System.out.println("Enter maximum price range");
             maxPrice = scanner.nextInt();
-            getStringInput();
+            scanner.nextLine();
 
             ItemCondition searchCondition = getItemCondition();
             Boolean filtered = true;
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, searchCondition, filtered, username);
-            printString("Jag når hit");
+            System.out.println("Jag når hit");
         } else {
             Boolean filtered = false;
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition, filtered, username);
-            printString("Jag nådde elseblocket");
+            System.out.println("Jag nådde elseblocket");
         }
 
 
@@ -252,21 +308,21 @@ public class Client {
 
                 productFound = (boolean) o;
                 if (productFound) {
-                    printString("Product found!" + "\n");
+                    System.out.println("Product found!" + "\n");
                     clearConsole();
                     o = ois.readObject();
                     if (o instanceof ArrayList) {
                         ArrayList<Product> productsList = (ArrayList) o;
                         int count = 1;
                         for (Product a : productsList) {
-                            printString(count++ + ". " + a.toString2());
+                            System.out.println(count++ + ". " + a.toString2());
                         }
                     }
 
                     addToCartOption();
 
                 } else {
-                    printString("Product not found!" + "\n");
+                    System.out.println("Product not found!" + "\n");
                     clearConsole();
                 }
             }
@@ -279,20 +335,20 @@ public class Client {
     }
 
     private void addToCartOption() throws IOException {
-        printString("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
-        String response = getStringInput();
+        System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
+        String response = scanner.nextLine();
         oos.writeObject(response);
     }
 
     private ItemCondition getItemCondition() {
-        printString("What condition should the product be in?" + "\n" +
+        System.out.println("What condition should the product be in?" + "\n" +
                 "1 = NEW,\n" +
                 "2 = VERY_GOOD,\n" +
                 "3 = GOOD,\n" +
                 "4 = USED,\n" +
                 "5 = NOT_WORKING_PROPERLY");
         int condition = scanner.nextInt();
-        getStringInput();
+        scanner.nextLine();
 
         ItemCondition itemCondition = null;
         switch (condition) {
@@ -320,13 +376,13 @@ public class Client {
         Product product = createProduct();
         currRequest = new SellProductRequest(product, username);
         try {
-            printString("Im printing");
+            System.out.println("Im printing");
             oos.writeObject(currRequest);
             boolean verification = (boolean) ois.readObject();
             if (verification) {
-                printString("Your product has been added successfully");
+                System.out.println("Your product has been added successfully");
             } else {
-                printString("Your product has not been added successfully");
+                System.out.println("Your product has not been added successfully");
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -334,7 +390,7 @@ public class Client {
     }
 
     private Product createProduct() {
-        Product product = new Product.Builder("Sample Product", 100, 2024, username)
+        Product product = new Product.Builder("Sample Product", 100, 2024, username, "none")
                 .color("Red")
                 .itemCondidtion(ItemCondition.USED)
                 .status(Status.AVAILABLE)
@@ -343,8 +399,8 @@ public class Client {
         boolean loop = true;
 
         while (loop) {
-            printString("Your product is: " + product.toString());
-            printString("press the letter to change an attribute e.g. 'p' to change price, press r to ready");
+            System.out.println("Your product is: " + product.toString());
+            System.out.println("press the letter to change an attribute e.g. 'p' to change price, press r to ready");
 
             String input = scanner.next();
 
@@ -353,41 +409,41 @@ public class Client {
                     loop = false;
                     break;
                 case "p":
-                    printString("Enter new price: ");
+                    System.out.println("Enter new price: ");
                     int newPrice = scanner.nextInt();
-                    getStringInput();
+                    scanner.nextLine();
 
                     product.setPrice(newPrice);
 
                     break;
                 case "y":
-                    printString("Enter new year: ");
+                    System.out.println("Enter new year: ");
                     int newYear = scanner.nextInt();
-                    getStringInput();
+                    scanner.nextLine();
 
                     product.setYearOfProduction(newYear);
                     break;
                 case "i":
-                    printString("Enter new item condition" +
+                    System.out.println("Enter new item condition" +
                             "    1 = NEW,\n" +
                             "    2 = VERY_GOOD,\n" +
                             "    3 = GOOD,\n" +
                             "    4 = USED,\n" +
                             "    5 = NOT_WORKING_PROPERLY ");
                     int itemCondition = scanner.nextInt();
-                    getStringInput();
+                    scanner.nextLine();
 
                     modifyItemCondition(itemCondition, product);
                     break;
                 case "c":
-                    printString("Enter new color: ");
-                    nothing = getStringInput(); //Bug
-                    String color = getStringInput();
+                    System.out.println("Enter new color: ");
+                    nothing = scanner.nextLine(); //Bug
+                    String color = scanner.nextLine();
                     product.setColor(color);
                 case "n":
-                    printString("Enter new name:");
-                    nothing = getStringInput(); //Bug
-                    String newName = getStringInput();
+                    System.out.println("Enter new name:");
+                    nothing = scanner.nextLine(); //Bug
+                    String newName = scanner.nextLine();
                     product.setName(newName);
 
             }
@@ -416,26 +472,26 @@ public class Client {
     }
 
     private void askLoginData() {
-        printString("Are you a new user? y/n");
-        String s = getStringInput();
+        System.out.println("Are you a new user? y/n");
+        String s = scanner.nextLine();
         if (Objects.equals(s, "y")) {
-            printString("Enter firstname: ");
-            firstName = getStringInput();
-            printString("Enter lastname: ");
-            lastName = getStringInput();
-            printString("Enter email: ");
-            email = getStringInput();
-            printString("Enter username: ");
-            username = getStringInput();
-            printString("Enter password: ");
-            password = getStringInput();
+            System.out.println("Enter firstname: ");
+            firstName = scanner.nextLine();
+            System.out.println("Enter lastname: ");
+            lastName = scanner.nextLine();
+            System.out.println("Enter email: ");
+            email = scanner.nextLine();
+            System.out.println("Enter username: ");
+            username = scanner.nextLine();
+            System.out.println("Enter password: ");
+            password = scanner.nextLine();
             enterBirthDate();
             addUserToServer();
         } else {
-            printString("Enter username: ");
-            username = getStringInput();
-            printString("Enter password: ");
-            password = getStringInput();
+            System.out.println("Enter username: ");
+            username = scanner.nextLine();
+            System.out.println("Enter password: ");
+            password = scanner.nextLine();
             verifyLogin(username, password);
         }
 
@@ -451,7 +507,7 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        printString("Your login credentials are now saved on the server!");
+        System.out.println("Your login credentials are now saved on the server!");
     }
 
     private void verifyLogin(String usrName, String psWord) {
@@ -465,9 +521,9 @@ public class Client {
             throw new RuntimeException(e);
         }
         if (verification) {
-            printString("Welcome");
+            System.out.println("Welcome");
         } else {
-            printString("Wrong!");
+            System.out.println("Wrong!");
             askLoginData();
         }
     }
@@ -495,8 +551,8 @@ public class Client {
         Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}"); // Regular expression for yyyy-MM-dd format
 
         while (!validBirthDate) {
-            printString("Enter birthdate: (yyyy-MM-dd) ");
-            String date = getStringInput();
+            System.out.println("Enter birthdate: (yyyy-MM-dd) ");
+            String date = scanner.nextLine();
             Matcher matcher = pattern.matcher(date);
 
             if (matcher.matches()) {
@@ -511,18 +567,18 @@ public class Client {
                         validBirthDate = true;
                         /*SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
                         String outputString = outputFormat.format(birthDate);
-                        printString("Birthdate entered in correct format: " + outputString);
+                        System.out.println("Birthdate entered in correct format: " + outputString);
                          */
                     } else {
-                        printString("Invalid year, month, or day. Please try again.");
+                        System.out.println("Invalid year, month, or day. Please try again.");
                     }
                 } catch (ParseException e) {
-                    printString("Error parsing date.");
+                    System.out.println("Error parsing date.");
                 } catch (NumberFormatException e) {
-                    printString("Invalid year, month, or day format.");
+                    System.out.println("Invalid year, month, or day format.");
                 }
             } else {
-                printString("Wrong format. Please try again.");
+                System.out.println("Wrong format. Please try again.");
             }
         }
     }
@@ -531,20 +587,14 @@ public class Client {
      * Method to clear the console window by printing a dotted line.
      */
     public void clearConsole() {
-        printString("");
+        System.out.println();
         for (int i = 0; i < 100; i++) {
             System.out.print(".");
         }
-        printString("");
+        System.out.println();
     }
 
-    public synchronized String getStringInput() {
-        return scanner.nextLine();
-    }
 
-    public synchronized void printString(String string) {
-        System.out.println(string);
-    }
 
 
 }
