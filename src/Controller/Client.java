@@ -16,11 +16,14 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Thread.sleep;
+
 
 public class Client {
     private final ObjectOutputStream oos;
     private final ObjectInputStream ois;
     private final Socket socket;
+
     private String firstName;
     private String lastName;
     private Date birthDate;
@@ -35,19 +38,68 @@ public class Client {
     private int minPrice = 0;
     private int maxPrice = 1000000;
     private ItemCondition itemCondition = ItemCondition.USED;
+    private final int port = 1441;
+    private final int nPort = 8000;
+    private final String host = "127.0.0.1";
 
     public Client() {
         try {
-            int port = 1441;
-            socket = new Socket("127.0.0.1", port);
+            socket = new Socket(host, port);
             System.out.println("Client: connected");
             ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+
         askLoginData();
+
+        try {
+            sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        notificationListener();
+
+
         listener();
+
+
+
+
+    }
+
+    private void notificationListener() {
+        Thread notificationThread = new Thread(() -> {
+            try {
+                Socket nSocket = new Socket(host, 8000);
+                System.out.println("Client: noti connected");
+                ObjectInputStream nois = new ObjectInputStream(nSocket.getInputStream());
+                ObjectOutputStream noos = new ObjectOutputStream(nSocket.getOutputStream());
+
+                noos.writeObject(username);
+                noos.writeObject(username);
+
+                noos.flush();
+
+                while(true){
+                    System.out.println("Waiting for notification");
+                    Object object = nois.readObject();
+                    System.out.println(object);
+                }
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+        notificationThread.start();
     }
 
     private void menu() {
@@ -112,6 +164,7 @@ public class Client {
         currRequest.setUsername(username);
         try {
             oos.writeObject(currRequest);
+            oos.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

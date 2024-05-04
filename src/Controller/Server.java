@@ -18,6 +18,8 @@ public class Server extends Thread {
     private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
     private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
     private ArrayList<Product> productsList;
+    private Observer interestsObserver = new Observer();
+    private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
 
     //Change this later
     private final int port = 1441;
@@ -25,9 +27,13 @@ public class Server extends Thread {
     public Server() {
 
 
+
+
         addUser("mary", "abc");
         addUser("john", "abc");
 
+
+        run2();
 
         start();
         testProductArray();
@@ -81,6 +87,29 @@ public class Server extends Thread {
         map.put(name, purchases);
     }
 
+    private void run2() {
+        Thread notificationThread = new Thread(() -> {
+            try {
+                ServerSocket nServerSocket = new ServerSocket(8000);
+
+                System.out.println("Server2: skapad");
+
+                while(true){
+                    Socket nSocket = nServerSocket.accept();
+                    System.out.println("Server2: accept");
+
+                    NotificationThread nt = new NotificationThread(nSocket);
+                    new Thread(nt).start();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+        notificationThread.start(); // Start the thread
+
+    }
+
     public ArrayList<String> getPurchaseHistory(String usrName) {
         return purchaseHistory.get(usrName);
     }
@@ -88,11 +117,13 @@ public class Server extends Thread {
     public void run() {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
+
             System.out.println("Server: skapad");
             while (true) {
                 Socket socket = serverSocket.accept();
 
-                ClientThread ch = new ClientThread(socket);
+
+                ClientThread ch = new ClientThread(socket, null);
                 new Thread(ch).start();
             }
         } catch (IOException e) {
@@ -100,23 +131,51 @@ public class Server extends Thread {
         }
     }
 
+    public class NotificationThread implements Runnable {
+        public ObjectInputStream nis = null;
+        public ObjectOutputStream nos = null;
+
+        public NotificationThread(Socket nSocket) throws IOException {
+            this.nos = new ObjectOutputStream(nSocket.getOutputStream());
+            this.nis = new ObjectInputStream(nSocket.getInputStream());
+        }
+
+        public void run() {
+            try {
+                String username = (String) nis.readObject();
+
+                System.out.println("YEEreeeeeEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSS!");
+                notification_oos.put(username, nos);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     public class ClientThread implements Runnable {
         public ObjectInputStream is = null;
         public ObjectOutputStream os = null;
+        public ObjectOutputStream notiOS = null;
+
         private final Socket clientSocket;
+        private final Socket notificationSocket;
 
         private Writer writer;
 
 
-        private ClientThread(Socket clientSocket) {
+        private ClientThread(Socket clientSocket, Socket socket2) {
             this.clientSocket = clientSocket;
+            this.notificationSocket = socket2;
         }
 
         public void run() {
             try {
                 this.os = new ObjectOutputStream(clientSocket.getOutputStream());
                 this.is = new ObjectInputStream(clientSocket.getInputStream());
+                //this.notiOS = new ObjectOutputStream(notificationSocket.getOutputStream());
 
                 writer = new Writer();
 
@@ -172,7 +231,16 @@ public class Server extends Thread {
                                 os.writeObject(false);
                             }
 
-                            checkForMatchingInterests(product);
+                            String productName = spr.getProduct().getName();
+                            String notification = "Notification: "+ productName + " has been added to the products list";
+
+                            //checkForMatchingInterests(product);
+                            ArrayList<String> usernames = interestsObserver.notify(productName);
+                            for (String username : usernames) {
+                                ObjectOutputStream channel = notification_oos.get(username);
+                                channel.writeObject(notification);
+                                channel.flush();
+                            }
 
                         }
 
@@ -180,8 +248,14 @@ public class Server extends Thread {
                             System.out.println("Server: RegisterInterestRequest");
                             String username = request.getUsername();
                             String interest = request.getInterest();
-                            extendMap(username, interest, userInterests);
+                            interestsObserver.subscribe(username, interest);
                             System.out.println("Server: "+username+" has registered interest "+interest);
+
+                            /*
+                            ArrayList<String> usernames = interestsObserver.notify("mac");
+                            for (String user : usernames) {
+                                System.out.println(user);
+                            }*/
                         }
 
                         if (request instanceof SearchProductRequest spr) {
@@ -232,11 +306,15 @@ public class Server extends Thread {
                             os.writeObject(returnData);
                         }
 
-                        if (request instanceof VerifyUserRequest) {
+                        if (request instanceof VerifyUserRequest vur) {
                             String usrName = ((VerifyUserRequest) request).getUsrName();
                             String psWord = ((VerifyUserRequest) request).getPsWord();
 
                             boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
+
+                            if(verification) {
+                                notification_oos.put(usrName, notiOS); //Save oos for notifications channel
+                            }
 
                             os.writeObject(verification);
                         }
@@ -268,6 +346,7 @@ public class Server extends Thread {
                 return false;
             }*/
 
+            /*
             private void checkForMatchingInterests(Product product) {
                 String name = product.getName().toUpperCase();
                 List<String> list = getUsernamesWithInterest(name);
@@ -275,7 +354,7 @@ public class Server extends Thread {
                 for (String s : list){
                     System.out.println("-" + s);
                 }
-            }
+            }*/
 
             public List<String> getUsernamesWithInterest(String interest) {
                 List<String> matchingUsernames = new ArrayList<>();
