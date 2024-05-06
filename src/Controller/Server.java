@@ -234,7 +234,7 @@ public class Server extends Thread {
                             }
 
                             String productName = sellpr.getProduct().getName();
-                            String notification = "Notification: "+ productName + " has been added to the products list";
+                            String notification = "Notification: " + productName + " has been added to the products list";
 
                             //checkForMatchingInterests(product);
                             ArrayList<String> usernames = interestsObserver.notify(productName);
@@ -246,13 +246,12 @@ public class Server extends Thread {
 
                         }
 
-                        if (request instanceof RegisterInterestRequest){
+                        if (request instanceof RegisterInterestRequest) {
                             //System.out.println("Server: RegisterInterestRequest");
                             String username = request.getUsername();
                             String interest = request.getInterest();
                             interestsObserver.subscribe(username, interest);
                             //System.out.println("Server: "+username+" has registered interest "+interest);
-
                             /*
                             ArrayList<String> usernames = interestsObserver.notify("mac");
                             for (String user : usernames) {
@@ -269,10 +268,10 @@ public class Server extends Thread {
                             boolean productFound = false;
 
                             if (!spr.getFiltered()) {
-                               productsList = createUnfilteredSearch(productName);
+                                productsList = createUnfilteredSearch(productName);
                                 productFound = !productsList.isEmpty();
-                            } else if (spr.getFiltered()){
-                               productsList = createFilteredSearch(spr, productName);
+                            } else if (spr.getFiltered()) {
+                                productsList = createFilteredSearch(spr, productName);
                                 productFound = !productsList.isEmpty();
                             }
 
@@ -294,10 +293,8 @@ public class Server extends Thread {
                                 productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
 
 
-
                                 //int clientChoice = Integer.parseInt (data) - 1;
                                 //System.out.println(p.toString2());
-
 
 
                                 //System.out.println("CCC" + clientChoice);
@@ -331,9 +328,6 @@ public class Server extends Thread {
                                     }*/
 
 
-
-
-
                             } else {
                                 os.writeObject(productFound);
                             }
@@ -348,49 +342,48 @@ public class Server extends Thread {
 
                             //if (!cpr.isVerified()) {
 
-                                String username = request.getUsername();
+                            String username = request.getUsername();
 
-                                ArrayList<Product> buyerRequests = new ArrayList<>();
+                            ArrayList<Product> buyerRequests = new ArrayList<>();
 
-                                for (int i = 0; i < products.size(); i++) {
-                                    Product product = products.get(i);
+                            for (int i = 0; i < products.size(); i++) {
+                                Product product = products.get(i);
 
-                                    if (product.getBuyer() != null
-                                            && product.getBuyer() != "none"
-                                            && product.getSeller().equals(username)) {
-                                        //System.out.println("LK" + product.getBuyer());
-                                        buyerRequests.add(product);
+                                if (product.getBuyer() != null
+                                        && product.getBuyer() != "none"
+                                        && product.getSeller().equals(username)) {
+                                    //System.out.println("LK" + product.getBuyer());
+                                    buyerRequests.add(product);
 
-                                    }
                                 }
+                            }
 
 
+                            os.writeObject(buyerRequests);
+                            os.flush();
 
-                                os.writeObject(buyerRequests);
-                                os.flush();
+                            ArrayList<Product> response = (ArrayList<Product>) is.readObject();
 
-                                ArrayList<Product> response = (ArrayList<Product>) is.readObject();
+                            if (!response.isEmpty()) {
+                                for (Product product : response) {
+                                    if (product.getStatus().equals(Status.PENDING)) {
 
-                                if(!response.isEmpty()) {
-                                    for (Product product : response) {
-                                        if (product.getStatus().equals(Status.PENDING)) {
+                                        String buyerName = product.getBuyer();
+                                        String sellerName = product.getSeller();
 
-                                            String buyerName = product.getBuyer();
-                                            String sellerName = product.getSeller();
+                                        completeTransaction(buyerName, sellerName, product);
 
-                                            completeTransaction(buyerName, sellerName, product);
+                                        extendMap(buyerName, product.getName(), purchaseHistory);
 
-                                            extendMap(buyerName, product.getName(), purchaseHistory);
-
-                                            product.setStatus(Status.SOLD);
-                                        }
-
+                                        product.setStatus(Status.SOLD);
                                     }
+
                                 }
+                            }
 
                             //}
 
-                            if(11==28) {
+                            if (11 == 28) {
 
                                 for (Product product : cpr.getBuyerRequests()) {
                                     product.toString2();
@@ -410,6 +403,15 @@ public class Server extends Thread {
                             String buyer = request.getUsername();
                             ArrayList<Product> itemsToBuy = ((BuyProductRequest) request).getProducts();
                             purchaseReq.put(buyer, itemsToBuy);
+
+                            for (Product product : itemsToBuy) {
+                                String seller = product.getSeller();
+                                try {
+                                    sendNotificationToSeller(buyer, seller, product);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
 
                         if (request instanceof AddUserRequest) {
@@ -430,7 +432,7 @@ public class Server extends Thread {
 
                             boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
 
-                            if(verification) {
+                            if (verification) {
                                 //notification_oos.put(usrName, notiOS); //Save oos for notifications channel
                             }
 
@@ -447,6 +449,16 @@ public class Server extends Thread {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                }
+            }
+
+            private void sendNotificationToSeller(String buyerName, String sellerName, Product product) throws IOException {
+                String sellerNotification = STR."Notification: Buyer \{buyerName} has added \{product.getName()} to their cart";
+
+                ObjectOutputStream channel = notification_oos.get(sellerName);
+                if (channel != null) {
+                    channel.writeObject(sellerNotification);
+                    channel.flush();
                 }
             }
 

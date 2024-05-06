@@ -348,6 +348,9 @@ public class Client {
         System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
         String response = scanner.nextLine();
         int response2 = Integer.parseInt(response) -1;
+        if (response2 == 0) {
+            System.out.println("Purchase request has been sent to the seller! Please wait for their approval.");
+        }
         oos.writeObject(response2);
     }
 
