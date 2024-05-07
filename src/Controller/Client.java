@@ -87,11 +87,9 @@ public class Client {
 
                 }
 
-                } catch (IOException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+                }
 
         });
         notificationThread.start();
@@ -122,13 +120,14 @@ public class Client {
             case 4:
                 purchaseHistory();
                 break;
+                /*
             case 5:
                 //showCart();
                 checkPurchaseRequests();
                 break;
             case 6:
                 //checkPurchaseRequests();
-                break;
+                break;*/
         }
     }
 
@@ -245,9 +244,6 @@ public class Client {
         try {
             oos.writeObject(currRequest);
             ArrayList<String> history = (ArrayList<String>) ois.readObject();
-            if (history == null) {
-                System.out.println("null");
-            }
             clearConsole();
             if (history == null || history.isEmpty()) {
                 System.out.println("Your history is empty");
@@ -415,70 +411,96 @@ public class Client {
 
             String input = scanner.next();
 
-            switch (input) {
-                case "r":
-                    loop = false;
-                    break;
-                case "p":
-                    System.out.println("Enter new price: ");
-                    int newPrice = scanner.nextInt();
-                    scanner.nextLine();
-
-                    product.setPrice(newPrice);
-
-                    break;
-                case "y":
-                    System.out.println("Enter new year: ");
-                    int newYear = scanner.nextInt();
-                    scanner.nextLine();
-
-                    product.setYearOfProduction(newYear);
-                    break;
-                case "i":
-                    System.out.println("Enter new item condition" +
-                            "    1 = NEW,\n" +
-                            "    2 = VERY_GOOD,\n" +
-                            "    3 = GOOD,\n" +
-                            "    4 = USED,\n" +
-                            "    5 = NOT_WORKING_PROPERLY ");
-                    int itemCondition = scanner.nextInt();
-                    scanner.nextLine();
-
-                    modifyItemCondition(itemCondition, product);
-                    break;
-                case "c":
-                    System.out.println("Enter new color: ");
-                    nothing = scanner.nextLine(); //Bug
-                    String color = scanner.nextLine();
-                    product.setColor(color);
-                case "n":
-                    System.out.println("Enter new name:");
-                    nothing = scanner.nextLine(); //Bug
-                    String newName = scanner.nextLine();
-                    product.setName(newName);
-
-            }
-
+            loop = changeProduct(product, input);
         }
-
         return product;
     }
 
+    private boolean changeProduct(Product product, String input) {
+
+        switch (input) {
+            case "r":
+                return false;
+            case "p":
+                changePrice(product);
+                return true;
+            case "y":
+                changeYear(product);
+                return true;
+            case "i":
+                changeItemCondition(product);
+                return true;
+            case "c":
+                changeColor(product);
+                return true;
+            case "n":
+                changeName(product);
+                break;
+        }
+        return true;
+    }
+
+    private void changeName(Product product) {
+        System.out.println("Enter new name:");
+        nothing = scanner.nextLine(); //Bug
+        String newName = scanner.nextLine();
+        product.setName(newName);
+    }
+
+    private void changeColor(Product product) {
+        System.out.println("Enter new color: ");
+        nothing = scanner.nextLine(); //Bug
+        String color = scanner.nextLine();
+        product.setColor(color);
+    }
+
+    private void changeItemCondition(Product product) {
+        System.out.println("Enter new item condition" +
+                "    1 = NEW,\n" +
+                "    2 = VERY_GOOD,\n" +
+                "    3 = GOOD,\n" +
+                "    4 = USED,\n" +
+                "    5 = NOT_WORKING_PROPERLY ");
+        int itemCondition = scanner.nextInt();
+        scanner.nextLine();
+        modifyItemCondition(itemCondition, product);
+    }
+
+    private void changeYear(Product product) {
+        System.out.println("Enter new year: ");
+        int newYear = scanner.nextInt();
+        scanner.nextLine();
+        product.setYearOfProduction(newYear);
+    }
+
+    private void changePrice(Product product) {
+        System.out.println("Enter new price: ");
+        int newPrice = scanner.nextInt();
+        scanner.nextLine();
+        product.setPrice(newPrice);
+    }
+
     private void modifyItemCondition(int itemCondition, Product product) {
-        if (itemCondition == 1) {
-            product.setItemCondition(ItemCondition.NEW);
-        }
-        if (itemCondition == 2) {
-            product.setItemCondition(ItemCondition.VERY_GOOD);
-        }
-        if (itemCondition == 3) {
-            product.setItemCondition(ItemCondition.GOOD);
-        }
-        if (itemCondition == 4) {
-            product.setItemCondition(ItemCondition.USED);
-        }
-        if (itemCondition == 5) {
-            product.setItemCondition(ItemCondition.NOT_WORKING_PROPERLY);
+        switch (itemCondition) {
+            case 1:
+                product.setItemCondition(ItemCondition.NEW);
+                break;
+            case 2:
+                product.setItemCondition(ItemCondition.VERY_GOOD);
+                break;
+            case 3:
+                product.setItemCondition(ItemCondition.GOOD);
+                break;
+            case 4:
+                product.setItemCondition(ItemCondition.USED);
+                break;
+            case 5:
+                product.setItemCondition(ItemCondition.NOT_WORKING_PROPERLY);
+                break;
+            default:
+                System.out.println("Invalid input");
+                modifyItemCondition(itemCondition, product);
+                break;
         }
     }
 
@@ -561,6 +583,20 @@ public class Client {
         cart.clear();
     }
 
+
+
+    private boolean isValidYear(int year) {
+        return year >= 1900 && year <= 2100;
+    }
+
+    private boolean isValidMonth(int month) {
+        return month >= 1 && month <= 12;
+    }
+
+    private boolean isValidDay(int day) {
+        return day >= 1 && day <= 31;
+    }
+
     private void enterBirthDate() {
         boolean validBirthDate = false;
         Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}"); // Regular expression for yyyy-MM-dd format
@@ -577,7 +613,9 @@ public class Client {
                     int year = Integer.parseInt(date.substring(0, 4));
                     int month = Integer.parseInt(date.substring(5, 7));
                     int day = Integer.parseInt(date.substring(8, 10));
-                    if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                    if (isValidYear(year)
+                            && isValidMonth(month)
+                            && isValidDay(day)) {
                         birthDate = sdf.parse(date);
                         validBirthDate = true;
                         /*SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
