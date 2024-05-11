@@ -12,7 +12,7 @@ public class Main {
             //System.out.println(s);
         //}
 
-        Client client = new Client();
+        //Client client = new Client();
         //Client client2 = new Client();
 
 

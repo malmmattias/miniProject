@@ -30,7 +30,7 @@ public class Client {
     private final String username;
     private String password;
     private String nothing;
-    Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
     private ArrayList<Product> cart = new ArrayList<Product>();
     private Request currRequest;
     private Object currResponse;
@@ -504,11 +504,11 @@ public class Client {
         }
     }
 
-    private String askLoginData() {
+    public String askLoginData() {
         System.out.println("Are you a new user? y/n");
         String localized;
         String s = scanner.nextLine();
-        if (Objects.equals(s, "y")) {
+        if (Objects.equals(s, "yes")) {
             System.out.println("Enter firstname: ");
             firstName = scanner.nextLine();
             System.out.println("Enter lastname: ");
@@ -648,6 +648,7 @@ public class Client {
     }
 
 
-
-
+    public String getUsername() {
+        return username;
+    }
 }
