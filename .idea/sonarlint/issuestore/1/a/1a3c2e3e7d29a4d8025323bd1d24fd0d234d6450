@@ -1,0 +1,15 @@
+
+•	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°ÎJ$c7fb1d25-6f4e-4b72-99f4-749fd768901f
+v
+java:S1854":Remove this useless assignment to local variable "client".(·¶¢­J$15cd258d-b944-4443-b5b6-5509b504948a
+{
+java:S1854":Remove this useless assignment to local variable "server".(ë‡õ¸ÿÿÿÿÿJ$6a2338bd-1b49-4b12-b511-58b5f1f8e19c
+l
+java:S1481"+Remove this unused "server" local variable.(ë‡õ¸ÿÿÿÿÿJ$6da79737-e00f-4020-bcd5-048bcdfb2a70
+w	java:S125	"<This block of commented-out lines of code should be removed.(¤ü»€J$2a32b7e6-2378-4499-b027-95a527cbb72c
+|	java:S125"<This block of commented-out lines of code should be removed.(Œôƒ­þÿÿÿÿJ$200e049e-a352-4229-9b62-993bfbbfe437
+g
+java:S1481"+Remove this unused "client" local variable.(·¶¢­J$337ebdc6-da30-46ea-a734-c80ee1ce6e89
+|	java:S125"<This block of commented-out lines of code should be removed.(ÃÏµÒùÿÿÿÿJ$f71fc867-8fc2-495d-a413-aee86869754b
+l
+java:S1128"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒJ$7104c215-4214-4bb0-9469-a7b7bb454cd5
