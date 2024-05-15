@@ -15,14 +15,15 @@ import static Model.Status.AVAILABLE;
 import static Model.Status.SOLD;
 
 public class Server extends Thread {
-    private final Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
+    private final HashMap<String, ArrayList<String>> purchaseHistory = new HashMap<>();
     private final Observer interestsObserver = new Observer();
-    private final Map<String, String> loginCredentials = new HashMap<>();
+    private final HashMap<String, String> loginCredentials = new HashMap<>();
     private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
     //private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
     private ArrayList<Product> productsList;
-    private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
+    private final HashMap<String, ObjectOutputStream> notification_oos = new HashMap<>();
     //private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
+    private HashMap<String, String> unsentNotifications = new HashMap<>();
     private int currId = 100;
 
     public Server() {
@@ -36,6 +37,9 @@ public class Server extends Thread {
 
         extendMap("john", "anItemJohnBought", purchaseHistory);
         extendMap("john", "macBook", purchaseHistory);
+
+        interestsObserver.subscribe("john", "mac");
+        interestsObserver.subscribe("mary", "coffee");
     }
 
     // To test that the products can be found
@@ -70,7 +74,7 @@ public class Server extends Thread {
      * @param newListItem the ArrayList
      * @param map the map to extend
      */
-    private void extendMap(String name, String newListItem, Map<String, ArrayList<String>> map) {
+    private void extendMap(String name, String newListItem, HashMap<String, ArrayList<String>> map) {
         ArrayList<String> purchases = map.get(name);
         if (purchases == null) {
             purchases = new ArrayList<>();
@@ -136,7 +140,7 @@ public class Server extends Thread {
             try {
                 String username = (String) nis.readObject();
                 notification_oos.put(username, nos);
-                //notification_ois.put(username, nis);
+
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -189,11 +193,28 @@ public class Server extends Thread {
             private synchronized void reading() {
                 try {
                     while (isRunning) {
+                        try {
+                            os.flush();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
 
                         Request request = (Request) is.readObject();
 
-                        if(request instanceof ExitRequest){
+                        if (request instanceof FetchNotifications fn){
+                            String username = fn.getUsername();
+                            String message = unsentNotifications.get(username);
+                            if(message!=null) {
+                                os.writeObject(message);
+                            } else {
+                                os.writeObject("You have zero notifications");
+                            }
+
+                        }
+
+                        if(request instanceof ExitRequest er){
                             isRunning =false;
+                            notification_oos.remove(er.getUsername());
                         }
 
                         if (request instanceof SellProductRequest sellpr) {
@@ -218,9 +239,7 @@ public class Server extends Thread {
                             //checkForMatchingInterests(product);
                             ArrayList<String> usernames = interestsObserver.notify(productName);
                             for (String username : usernames) {
-                                ObjectOutputStream channel = notification_oos.get(username);
-                                channel.writeObject(notification);
-                                channel.flush();
+                                sendNotification(notification, username);
                             }
 
                         }
@@ -309,10 +328,12 @@ public class Server extends Thread {
 
                                             String buyerName = product.getBuyer();
                                             String sellerName = product.getSeller();
+                                            extendMap(buyerName, product.getName(), purchaseHistory);
+
+                                            //System.out.println("HERE");
+                                            //System.out.println(buyerName + product.getName());
 
                                             completeTransaction(buyerName, sellerName, product);
-
-                                            extendMap(buyerName, product.getName(), purchaseHistory);
 
                                             for (int i =0; i<products.size(); i++){
                                                 if (products.get(i).getId() == id){
@@ -366,6 +387,7 @@ public class Server extends Thread {
                     throw new RuntimeException(e);
                 } finally {
                     try {
+                        os.flush();
                         clientSocket.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -377,6 +399,9 @@ public class Server extends Thread {
                 ObjectOutputStream os = notification_oos.get(sellerName);
                 if(os!=null){
                     os.writeObject(s);
+                    //unsentNotifications.put(sellerName, s);
+                } else {
+                    unsentNotifications.put(sellerName, s);
                 }
             }
 

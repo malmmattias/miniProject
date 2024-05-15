@@ -135,8 +135,7 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
+    public String toStringVertical() {
 
         return "Your product +\n" +
                 "   price: " + price + "\n" +
@@ -147,10 +146,10 @@ public class Product implements Serializable {
                 "   name: " + name + "\n";
     }
 
-    public String toString2(){
+    public String toStringHorizontal(){
 
         return name + ", " + price + "kr, " + "year "
                 + yearOfProduction + ", " + color + ", itemCondition " + itemCondition + ", status: "
-                + status + "  " + ", buery " + buyer + ",seller " + seller + "\n" ;
+                + status + "  " + ", buyer " + buyer + ",seller " + seller + "\n" ;
     }
 }

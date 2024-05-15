@@ -14,6 +14,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Integer.parseInt;
+
 public class Client {
     private final ObjectOutputStream oos;
     private final ObjectInputStream ois;
@@ -54,8 +56,7 @@ public class Client {
                 ObjectOutputStream noos = new ObjectOutputStream(nSocket.getOutputStream());
 
                 noos.writeObject(username);
-
-                noos.flush();
+                //noos.flush();
 
                 while(true){
                     //System.out.println("Waiting for notification");
@@ -73,6 +74,12 @@ public class Client {
     }
 
     private void menu() {
+        try {
+            oos.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         clearConsole();
         System.out.println("Choose what you want to do!");
         System.out.println("1. Sell product.");
@@ -80,29 +87,45 @@ public class Client {
         System.out.println("3. Register interest in product category.");
         System.out.println("4. Show purchase history.");
         System.out.println("5. Check purchase requests");
+        //System.out.println("6. To check notifications");
         System.out.println("6. To exit");
         int choice = scanner.nextInt();
         scanner.nextLine();
-        switch (choice) {
-            case 1:
-                sellProduct();
-                break;
-            case 2:
-                searchProduct();
-                break;
-            case 3:
-                registerInterest();
-                break;
-            case 4:
-                purchaseHistory();
-                break;
-            case 5:
-                //showCart();
-                checkPurchaseRequests();
-                break;
-            case 6:
-                exitClient();
-                break;
+        try {
+            switch (choice) {
+                case 1:
+                    sellProduct();
+                    break;
+                case 2:
+                    searchProduct();
+                    break;
+                case 3:
+                    registerInterest();
+                    break;
+                case 4:
+                    purchaseHistory();
+                    break;
+                case 5:
+                    checkPurchaseRequests();
+                    break;
+                case 6:
+                    exitClient();
+                    //checkNoti();
+                    break;
+
+            }
+        } catch (Exception e) {
+            System.out.println("Weird input!");
+        }
+    }
+
+    private void checkNoti() {
+        try {
+            oos.writeObject(new FetchNotifications(username));
+            String response = (String) ois.readObject();
+            System.out.println(response);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -110,6 +133,7 @@ public class Client {
         System.out.println("Goodbye "+ username);
         try {
             oos.writeObject(new ExitRequest(username));
+            oos.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -120,7 +144,6 @@ public class Client {
     private void checkPurchaseRequests() {
         try {
             oos.writeObject(new CheckPurchaseRequests(username));
-            oos.flush();
 
             ArrayList<Product> buyerRequests = (ArrayList<Product>) ois.readObject();
 
@@ -147,7 +170,6 @@ public class Client {
             }
 
             oos.writeObject(buyerRequests);
-            oos.flush();
 
         } catch (EOFException e) {
             // Handle EOFException gracefully (e.g., log the error)
@@ -233,14 +255,13 @@ public class Client {
                 productFound = (boolean) o;
                 if (productFound) {
                     System.out.println("Product found!");
-                    clearConsole();
                     o = ois.readObject();
                     ArrayList<Product> productsList = (ArrayList) o;
 
                     //if (o instanceof ArrayList) {
                         int count = 1;
                         for (Product a : productsList) {
-                            System.out.println(count++ + ". " + a.toString2());
+                            System.out.println(count++ + ". " + a.toStringHorizontal());
                         }
                     //}
 
@@ -248,7 +269,6 @@ public class Client {
 
                 } else {
                     System.out.println("Product not found!");
-                    clearConsole();
                 }
             }
 
@@ -262,8 +282,14 @@ public class Client {
     private void addToCartOption() throws IOException {
         System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
         String response = scanner.nextLine();
-        int response2 = Integer.parseInt(response) -1;
-        oos.writeObject(response2);
+        int purchaseDecision = -1;
+        try {
+            purchaseDecision = Integer.parseInt(response) -1;
+            System.out.println("Your purchase request is sent, now you must wait for approval");
+        } catch (NumberFormatException e) {
+            System.out.println("Weird input!");
+        }
+        oos.writeObject(purchaseDecision);
     }
 
     private ItemCondition getItemCondition() {
@@ -290,18 +316,20 @@ public class Client {
     private void sellProduct() {
         clearConsole();
         Product product = createProduct();
-        currRequest = new SellProductRequest(product, username);
-        try {
-            //System.out.println("Im printing");
-            oos.writeObject(currRequest);
-            boolean verification = (boolean) ois.readObject();
-            if (verification) {
-                System.out.println("Your product has been added successfully");
-            } else {
-                System.out.println("Your product has not been added successfully");
+        if(product!=null) {
+            currRequest = new SellProductRequest(product, username);
+            try {
+                //System.out.println("Im printing");
+                oos.writeObject(currRequest);
+                boolean verification = (boolean) ois.readObject();
+                if (verification) {
+                    System.out.println("Your product has been added successfully");
+                } else {
+                    System.out.println("Your product has not been added successfully");
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -315,7 +343,7 @@ public class Client {
         boolean loop = true;
 
         while (loop) {
-            System.out.println("Your product is: " + product.toString());
+            System.out.println("Your product is: " + product.toStringVertical());
             System.out.println("press the letter to change an attribute e.g. 'p' to change price, press r to ready");
 
             String input = scanner.next();
@@ -361,7 +389,6 @@ public class Client {
                     nothing = scanner.nextLine(); //Bug
                     String newName = scanner.nextLine();
                     product.setName(newName);
-
             }
 
         }
@@ -450,6 +477,8 @@ public class Client {
     }
 
     private void listener() {
+        checkNoti();
+
         while (true) {
             menu();
         }
@@ -468,9 +497,9 @@ public class Client {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     // Check if year, month, and day are within valid ranges
-                    int year = Integer.parseInt(date.substring(0, 4));
-                    int month = Integer.parseInt(date.substring(5, 7));
-                    int day = Integer.parseInt(date.substring(8, 10));
+                    int year = parseInt(date.substring(0, 4));
+                    int month = parseInt(date.substring(5, 7));
+                    int day = parseInt(date.substring(8, 10));
                     if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
                         Date birthDate = sdf.parse(date);
                         validBirthDate = true;
