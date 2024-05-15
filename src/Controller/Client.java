@@ -14,9 +14,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Thread.sleep;
-
-
 public class Client {
     private final ObjectOutputStream oos;
     private final ObjectInputStream ois;
@@ -27,7 +24,7 @@ public class Client {
     private Request currRequest;
     private int minPrice = 0;
     private int maxPrice = 1000000;
-    private ItemCondition itemCondition = ItemCondition.USED;
+    private final ItemCondition itemCondition = ItemCondition.USED;
     private final String host = "127.0.0.1";
 
     public Client() {
@@ -43,19 +40,9 @@ public class Client {
             throw new RuntimeException(e);
         }
 
-
         askLoginData();
-
-
-
         notificationListener();
-
-
         listener();
-
-
-
-
     }
 
     private void notificationListener() {
@@ -145,7 +132,7 @@ public class Client {
 
                 for (Product p : buyerRequests) {
 
-                    permission = STR."PERMISSION: Do you, \{p.getSeller()}, agrre to sell product \{p.getName()} for \{p.getPrice()}to \{p.getBuyer()}? y/n";
+                    permission = "PERMISSION: Do you, " + p.getSeller() + ", agrre to sell product " + p.getName() + " for " + p.getPrice() + " to " + p.getBuyer() + "? y/n";
 
                     System.out.println(permission);
                     String inpt =  scanner.nextLine();
@@ -237,7 +224,7 @@ public class Client {
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition, filtered, username);
             //System.out.println("Jag nådde elseblocket");
         }
-        boolean productFound = false;
+        boolean productFound;
 
         try {
             oos.writeObject(currRequest);
@@ -282,12 +269,13 @@ public class Client {
     }
 
     private ItemCondition getItemCondition() {
-        System.out.println("What condition should the product be in?" + "\n" +
-                "1 = NEW,\n" +
-                "2 = VERY_GOOD,\n" +
-                "3 = GOOD,\n" +
-                "4 = USED,\n" +
-                "5 = NOT_WORKING_PROPERLY");
+        System.out.println("""
+                What condition should the product be in?
+                1 = NEW,
+                2 = VERY_GOOD,
+                3 = GOOD,
+                4 = USED,
+                5 = NOT_WORKING_PROPERLY""");
         int condition = scanner.nextInt();
         scanner.nextLine();
 
@@ -499,10 +487,7 @@ public class Client {
                     if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
                         Date birthDate = sdf.parse(date);
                         validBirthDate = true;
-                        /*SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
-                        String outputString = outputFormat.format(birthDate);
-                        System.out.println("Birthdate entered in correct format: " + outputString);
-                         */
+
                     } else {
                         System.out.println("Invalid year, month, or day. Please try again.");
                     }
@@ -521,8 +506,7 @@ public class Client {
      * Method to clear the console window by printing a dotted line.
      */
     public void clearConsole() {
-        System.out.println();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             System.out.print(".");
         }
         System.out.println();

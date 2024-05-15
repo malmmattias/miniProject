@@ -1,9 +1,9 @@
 package Controller;
 
-public class StartClient {
+public class RunClientN {
     public static void main(String[] args) {
 
-        Client client = new Client();
+        Client clientN = new Client();
     }
 
 

@@ -18,10 +18,10 @@ public class Server extends Thread {
     private final Observer interestsObserver = new Observer();
     private final Map<String, String> loginCredentials = new HashMap<>();
     private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
-    private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
+    //private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
     private ArrayList<Product> productsList;
     private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
-    private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
+    //private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
     private int currId = 100;
 
     public Server() {
@@ -35,8 +35,6 @@ public class Server extends Thread {
 
         extendMap("john", "anItemJohnBought", purchaseHistory);
         extendMap("john", "macBook", purchaseHistory);
-
-
     }
 
     // To test that the products can be found
@@ -136,10 +134,8 @@ public class Server extends Thread {
         public void run() {
             try {
                 String username = (String) nis.readObject();
-
-                //System.out.println("YEEreeeeeEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSS!");
                 notification_oos.put(username, nos);
-                notification_ois.put(username, nis);
+                //notification_ois.put(username, nis);
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -329,7 +325,7 @@ public class Server extends Thread {
 
                                             extendMap(buyerName, product.getName(), purchaseHistory);
 
-                                            System.out.println(products.findAndReplace(product) + "id" + id);
+                                            //System.out.println(products.findAndReplace(product) + "id" + id);
 
                                             for (int i =0; i<products.size(); i++){
                                                 if (products.get(i).getId() == id){
@@ -343,12 +339,6 @@ public class Server extends Thread {
                                     }
                                 }
 
-                        }
-
-                        if (request instanceof BuyProductRequest) {
-                            String buyer = request.getUsername();
-                            ArrayList<Product> itemsToBuy = ((BuyProductRequest) request).getProducts();
-                            purchaseReq.put(buyer, itemsToBuy);
                         }
 
                         if (request instanceof AddUserRequest aur) {
