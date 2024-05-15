@@ -1,0 +1,6 @@
+
+¸
+java:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".( ¤Šûÿÿÿÿ8ô­Ø÷1J$5ab005f7-7e9c-42e1-a171-6164b86998e0
+¯
+java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ùõ´÷8“ô­Ø÷1J$99de1dc9-0347-4dcd-a111-957704417116
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8˜ô­Ø÷1J$7c450f31-a0a3-44a7-b788-e6bbbe9fea0b

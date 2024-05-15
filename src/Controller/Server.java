@@ -21,6 +21,7 @@ public class Server extends Thread {
     private Observer interestsObserver = new Observer();
     private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
     private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
+    private final ServerHelper helper = new ServerHelper();
 
     //Change this later
     private final int port = 1441;
@@ -251,13 +252,6 @@ public class Server extends Thread {
                             String username = request.getUsername();
                             String interest = request.getInterest();
                             interestsObserver.subscribe(username, interest);
-                            //System.out.println("Server: "+username+" has registered interest "+interest);
-
-                            /*
-                            ArrayList<String> usernames = interestsObserver.notify("mac");
-                            for (String user : usernames) {
-                                //System.out.println(user);
-                            }*/
                         }
 
                         if (request instanceof SearchProductRequest spr) {
@@ -272,7 +266,7 @@ public class Server extends Thread {
                                productsList = createUnfilteredSearch(productName);
                                 productFound = !productsList.isEmpty();
                             } else if (spr.getFiltered()){
-                               productsList = createFilteredSearch(spr, productName);
+                               productsList = helper.createFilteredSearch(spr, productName, products, productsList);
                                 productFound = !productsList.isEmpty();
                             }
 
@@ -292,48 +286,6 @@ public class Server extends Thread {
                                 int i = products.findAndReplace(productsList.get(clientChoiceIndexed));
                                 //System.out.println(i+"Q");
                                 productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
-
-
-
-                                //int clientChoice = Integer.parseInt (data) - 1;
-                                //System.out.println(p.toString2());
-
-
-
-                                //System.out.println("CCC" + clientChoice);
-
-                                /*
-                                if (clientChoice > -1) { //above zero means the client decided to buy a product
-
-                                    Product purchase = productsList.get(clientChoice);
-                                    purchase.toString2();
-                                    purchase.setBuyer(userNameImportant);
-
-                                    //int i = products.findIndex(purchase);
-
-                                    //products.get(i).setBuyer(userNameImportant);
-
-                                    //String username = request.getUsername();
-                                    //purchase.setBuyer(username);
-
-                                    //products.overwrite(i, purchase);
-                                }*/
-
-                                    /*
-                                    boolean permissionGranted = askPermission(request.getUsername(), purchase);
-
-                                    //System.out.println("PQ " + permissionGranted);
-                                    int i = products.findIndex(purchase);
-
-                                    purchase.setStatus(Status.SOLD);
-
-                                    products.overwrite(i, purchase);
-                                    }*/
-
-
-
-
-
                             } else {
                                 os.writeObject(productFound);
                             }
@@ -390,20 +342,6 @@ public class Server extends Thread {
 
                             //}
 
-                            if(11==28) {
-
-                                for (Product product : cpr.getBuyerRequests()) {
-                                    product.toString2();
-
-                                    if (product.getStatus().equals(Status.PENDING)) {
-
-                                        String buyerName = product.getBuyer();
-                                        String sellerName = product.getSeller();
-
-                                        completeTransaction(buyerName, sellerName, product);
-                                    }
-                                }
-                            }
                         }
 
                         if (request instanceof BuyProductRequest) {
@@ -469,71 +407,6 @@ public class Server extends Thread {
 
             }
 
-            private boolean askPermission(String usernameBuyer, Product purchase) {
-                String usernameSeller = purchase.getSeller();
-
-                String permission = STR."PERMISSION: Do you, \{usernameSeller}, agrre to sell product \{purchase.getName()} for \{purchase.getPrice()}to \{usernameBuyer}? y/n";
-
-                boolean permissionGranted = false;
-
-
-                try {
-                    ObjectOutputStream objectz = notification_oos.get(usernameSeller);
-                    objectz.writeObject(permission);
-                    objectz.flush();
-
-                    String response = (String) notification_ois.get(usernameSeller).readObject();
-
-                    if(response.equals("y")){
-                        permissionGranted = true;
-                    }
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                return permissionGranted;
-            }
-
-            /*
-            private boolean productNameExists(String newProductName) {
-                for(int i = 0; i < products.size(); i++) {
-                    String productName = products.get(i).getName();
-                    if (Objects.equals(productName, newProductName)) {
-                        return true;
-                    } //Detta är en tillfällig lösning som söker används för att
-                    //verifigera om ny sell request matchar någons intressen
-                    //Den bör slås ihop med SearchProductRequest s
-                    //Martin
-                }
-                return false;
-            }*/
-
-            /*
-            private void checkForMatchingInterests(Product product) {
-                String name = product.getName().toUpperCase();
-                List<String> list = getUsernamesWithInterest(name);
-                //System.out.println("Server: Selling a new product, here's all users with matching interests");
-                for (String s : list){
-                    //System.out.println("-" + s);
-                }
-            }*/
-
-            public List<String> getUsernamesWithInterest(String interest) {
-                List<String> matchingUsernames = new ArrayList<>();
-
-                for (Map.Entry<String, ArrayList<String>> entry : userInterests.entrySet()) {
-                    String username = entry.getKey();
-                    ArrayList<String> userInterestsList = entry.getValue();
-
-                    if (userInterestsList.contains(interest)) {
-                        matchingUsernames.add(username);
-                    }
-                }
-                //Fortsätta här imorgon
-                return matchingUsernames;
-            }
 
             private ArrayList<Product> createUnfilteredSearch(String productName) {
                 for (int i = 0; i < products.size(); i++) {
@@ -546,18 +419,7 @@ public class Server extends Thread {
                 return productsList;
             }
 
-            private ArrayList<Product> createFilteredSearch(SearchProductRequest spr2, String productName){
-                for (int i = 0; i < products.size(); i++) {
-                    Product product = products.get(i);
-                    if (productName.contains(product.getName().toUpperCase())
-                            && (product.getPrice() >= spr2.getMin() && product.getPrice() <= spr2.getMax())
-                            && (spr2.getItemCondition().equals(product.getItemCondition()))) {
-                        ////System.out.println("Product found: " + product.getName());
-                        productsList.add(product);
-                    }
-                }
-                return productsList;
-            }
+
         }
 
         /**
@@ -581,19 +443,11 @@ public class Server extends Thread {
             }
 
 
-            public void sendMessage() throws IOException {
 
-            }
         }
 
     }
 
-    public void clearConsole() {
-        //System.out.println();
-        for (int i = 0; i < 100; i++) {
-            //System.out.print(".");
-        }
-        //System.out.println();
-    }
+
 }
 
