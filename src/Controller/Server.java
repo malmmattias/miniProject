@@ -11,6 +11,7 @@ import java.util.*;
 
 import Model.Requests.*;
 
+import static Model.Status.AVAILABLE;
 import static Model.Status.SOLD;
 
 public class Server extends Thread {
@@ -158,9 +159,6 @@ public class Server extends Thread {
             try {
                 this.os = new ObjectOutputStream(clientSocket.getOutputStream());
                 this.is = new ObjectInputStream(clientSocket.getInputStream());
-                //this.notiOS = new ObjectOutputStream(notificationSocket.getOutputStream());
-
-                //writer = new Writer();
 
                 new Reader();
 
@@ -191,10 +189,7 @@ public class Server extends Thread {
             private synchronized void reading() {
                 try {
                     while (isRunning) {
-                        //System.out.println("Server: Client connected");
 
-                        //Gson gson = new Gson();
-                        //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                         Request request = (Request) is.readObject();
 
                         if(request instanceof ExitRequest){
@@ -208,8 +203,7 @@ public class Server extends Thread {
                             product.setId(currId++);
                             products.add(product);
 
-                            products.toStringMethod();
-                            //System.out.println("Update from sellrequest");
+                            System.out.println("Server: Number of products in the marketplace is " + products.size());
 
                             int sizeAftr = products.size();
                             if (sizeAftr > sizeBfr) {
@@ -258,37 +252,33 @@ public class Server extends Thread {
 
 
                             if (productFound) {
-                                os.writeObject(productFound);
+                                os.writeObject(true);
                                 os.writeObject(productsList);
 
                                 os.flush();
 
-
-                                //Product p = (Product) is.readObject();
-                                //p.setBuyer(userNameImportant);
-
                                 int clientChoiceIndexed = (int) is.readObject();
 
                                 if(clientChoiceIndexed>-1) {
-                                    //System.out.println(i+"Q");
-                                    productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
                                     String sellerName = productsList.get(clientChoiceIndexed).getSeller();
-                                    sendNotification("You received a request, ", sellerName);
+                                    //System.out.println(i+"Q");
+                                    boolean okToBuy = productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
+                                    if(okToBuy) {
+                                        sendNotification("You received a request, ", sellerName);
+                                    } else{
+                                        sendNotification("Buyer and seller cannot be identical", sellerName);
+                                    }
                                 }
 
                             } else {
-                                os.writeObject(productFound);
+                                os.writeObject(false);
                             }
 
                             productsList.clear();
                             os.flush();
-
-
                         }
 
                         if (request instanceof CheckPurchaseRequests cpr) {
-
-                            //if (!cpr.isVerified()) {
 
                                 String username = cpr.getUsername();
 
@@ -306,8 +296,6 @@ public class Server extends Thread {
                                     }
                                 }
 
-
-
                                 os.writeObject(buyerRequests);
                                 os.flush();
 
@@ -315,17 +303,16 @@ public class Server extends Thread {
 
                                 if(!response.isEmpty()) {
                                     for (Product product : response) {
+                                        int id = product.getId();
+
                                         if (product.getStatus().equals(Status.PENDING)) {
 
                                             String buyerName = product.getBuyer();
                                             String sellerName = product.getSeller();
-                                            int id = product.getId();
 
                                             completeTransaction(buyerName, sellerName, product);
 
                                             extendMap(buyerName, product.getName(), purchaseHistory);
-
-                                            //System.out.println(products.findAndReplace(product) + "id" + id);
 
                                             for (int i =0; i<products.size(); i++){
                                                 if (products.get(i).getId() == id){
@@ -336,8 +323,19 @@ public class Server extends Thread {
 
                                         }
 
-                                    }
+                                        if (product.getStatus().equals(Status.REJECTED)) {
+                                            for (int i =0; i<products.size(); i++){
+                                                if (products.get(i).getId() == id){
+                                                    product.setBuyer("none");
+                                                    product.setStatus(AVAILABLE);
+                                                    products.overwrite(i, product);
+                                                }
+                                            }
+                                        }
+
+                                        }
                                 }
+
 
                         }
 
@@ -375,7 +373,7 @@ public class Server extends Thread {
                 }
             }
 
-            private void sendNotification(String s, String sellerName) throws IOException {
+            private synchronized void sendNotification(String s, String sellerName) throws IOException {
                 ObjectOutputStream os = notification_oos.get(sellerName);
                 if(os!=null){
                     os.writeObject(s);
@@ -409,7 +407,6 @@ public class Server extends Thread {
                     if (productName.contains(product.getName().toUpperCase())
                             && (product.getPrice() >= spr2.getMin() && product.getPrice() <= spr2.getMax())
                             && (spr2.getItemCondition().equals(product.getItemCondition()))) {
-                        ////System.out.println("Product found: " + product.getName());
                         productsList.add(product);
                     }
                 }

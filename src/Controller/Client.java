@@ -79,8 +79,6 @@ public class Client {
         System.out.println("2. Search for product.");
         System.out.println("3. Register interest in product category.");
         System.out.println("4. Show purchase history.");
-        //System.out.println("5. Display cart");
-        //System.out.println("6. Check purchase requests");
         System.out.println("5. Check purchase requests");
         System.out.println("6. To exit");
         int choice = scanner.nextInt();
@@ -141,8 +139,8 @@ public class Client {
                         p.setStatus(Status.PENDING);
                     } else{
                         System.out.println("You rejected the transaction");
+                        p.setStatus(Status.REJECTED);
                     }
-                    //System.out.println(p.toString2());
                 }
             } else {
                 System.out.println("You have zero purchase requests");
@@ -196,7 +194,7 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        System.out.println("You subscribed to an interest");
     }
 
     private void searchProduct() {
@@ -234,7 +232,7 @@ public class Client {
 
                 productFound = (boolean) o;
                 if (productFound) {
-                    System.out.println("Product found!" + "\n");
+                    System.out.println("Product found!");
                     clearConsole();
                     o = ois.readObject();
                     ArrayList<Product> productsList = (ArrayList) o;
@@ -249,7 +247,7 @@ public class Client {
                     addToCartOption();
 
                 } else {
-                    System.out.println("Product not found!" + "\n");
+                    System.out.println("Product not found!");
                     clearConsole();
                 }
             }
@@ -279,25 +277,14 @@ public class Client {
         int condition = scanner.nextInt();
         scanner.nextLine();
 
-        ItemCondition itemCondition = null;
-        switch (condition) {
-            case 1:
-                itemCondition = ItemCondition.NEW;
-                break;
-            case 2:
-                itemCondition = ItemCondition.VERY_GOOD;
-                break;
-            case 3:
-                itemCondition = ItemCondition.GOOD;
-                break;
-            case 4:
-                itemCondition = ItemCondition.USED;
-                break;
-            case 5:
-                itemCondition = ItemCondition.NOT_WORKING_PROPERLY;
-                break;
-        }
-        return itemCondition;
+        return switch (condition) {
+            case 1 -> ItemCondition.NEW;
+            case 2 -> ItemCondition.VERY_GOOD;
+            case 3 -> ItemCondition.GOOD;
+            case 4 -> ItemCondition.USED;
+            case 5 -> ItemCondition.NOT_WORKING_PROPERLY;
+            default -> null;
+        };
     }
 
     private void sellProduct() {

@@ -36,30 +36,8 @@ public class ResizableProductsArray<T> {
         array = newArray;
     }
 
-    public void toStringMethod() {
-        System.out.println("NUmber of products " + size);
-    }
-
-    public Object[] getAllProducts() {
-        return array;
-    }
-
-    public int findAndReplace(T element) {
-        for (int i = 0; i < size; i++) {
-            if (array[i].equals(element)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public void overwrite(int i, T element){
         array[i] = element;
-    }
-
-
-    public int getSize() {
-        return size;
     }
 
 }

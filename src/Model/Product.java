@@ -13,15 +13,6 @@ public class Product implements Serializable {
     private final String seller;
     private String buyer;
     private int id;
-    private boolean accepted = false; //weather transaction is accepted
-
-    public boolean isAccepted() {
-        return accepted;
-    }
-
-    public void setAccepted(boolean accepted) {
-        this.accepted = accepted;
-    }
 
     public String getName() {
         return name;
@@ -35,11 +26,13 @@ public class Product implements Serializable {
         return seller;
     }
 
-    public void setBuyer(String b) {
+    public boolean setBuyer(String b) {
         if (Objects.equals(b, seller)){
             System.out.println("Buyer can be the same as seller");
+            return false;
         } else {
             this.buyer = b;
+            return true;
         }
 
     }
@@ -74,7 +67,7 @@ public class Product implements Serializable {
     public Status getStatus() {
         return status;
     }
-    // Getters for all attributes
+
 
     public static class Builder {
         // Required parameters
@@ -112,15 +105,11 @@ public class Product implements Serializable {
             return this;
         }
 
-        public void setPrice(int price) {
-            this.price = price;
-        }
 
         public Product build() {
             return new Product(this);
         }
     }
-
 
     public void setYearOfProduction(int yearOfProduction) {
         this.yearOfProduction = yearOfProduction;
@@ -164,5 +153,4 @@ public class Product implements Serializable {
                 + yearOfProduction + ", " + color + ", itemCondition " + itemCondition + ", status: "
                 + status + "  " + ", buery " + buyer + ",seller " + seller + "\n" ;
     }
-
 }
