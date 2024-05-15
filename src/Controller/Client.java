@@ -7,8 +7,6 @@ import java.io.*;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -192,7 +190,7 @@ public class Client {
             if (history == null || history.isEmpty()) {
                 System.out.println("Your history is empty");
             } else {
-                System.out.println("Will you sort your history by date? then type the year – otherwise just type something else");
+                System.out.println("Will you sort your history by date? then type the YYYY – otherwise just type something else");
                 String focus = scanner.nextLine();
 
                 List<String> filteredList = getInput(history, focus);
