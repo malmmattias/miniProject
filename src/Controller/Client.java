@@ -95,6 +95,7 @@ public class Client {
         //System.out.println("5. Display cart");
         //System.out.println("6. Check purchase requests");
         System.out.println("5. Check purchase requests");
+        System.out.println("6. To exit");
         int choice = scanner.nextInt();
         scanner.nextLine();
         switch (choice) {
@@ -115,9 +116,20 @@ public class Client {
                 checkPurchaseRequests();
                 break;
             case 6:
-                //checkPurchaseRequests();
+                exitClient();
                 break;
         }
+    }
+
+    private void exitClient() {
+        System.out.println("Goodbye "+ username);
+        try {
+            oos.writeObject(new ExitRequest(username));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.exit(0);
     }
 
     private void checkPurchaseRequests() {
