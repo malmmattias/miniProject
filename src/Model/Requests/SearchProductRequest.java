@@ -11,7 +11,6 @@ private ItemCondition itemCondition = ItemCondition.USED;
 private Boolean filtered;
     public SearchProductRequest(String productName, int min, int max, ItemCondition condition, Boolean filtered, String username) {
 super(username);
-        System.out.println("AAA" + username);
         this.productName = productName;
         this.min = min;
         this.max = max;
