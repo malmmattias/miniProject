@@ -1,37 +1,38 @@
 
-	java:S112j"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÀÌ‰İ÷1J$16b4d103-8419-4569-9f5c-631d6093952c
-	java:S112˜"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÀÌ‰İ÷1J$b4515e86-f7e9-4eeb-acc5-6f76d626b203
-	java:S112š"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÀÌ‰İ÷1J$a470f82e-2167-4f25-8238-d6f940c87c02
+	java:S112d"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÀÌ‰İ÷1J$5e0951d7-d5d7-4bb9-bdf7-ab1e3017ccf7
+	java:S112’"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÀÌ‰İ÷1J$16d55134-2444-49ce-8b31-592dbfef9063
+	java:S112”"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8ÀÌ‰İ÷1J$e01ee6db-6b8f-4565-b665-a3caf59a512d
 °
-java:S1319"hThe type of "purchaseReq" should be an interface such as "Map" rather than the implementation "HashMap".(ˆŞ›Ãüÿÿÿÿ8áÌ‰İ÷1J$d5caae45-5e58-4700-affe-69d40e69b82e
+java:S1319"hThe type of "purchaseReq" should be an interface such as "Map" rather than the implementation "HashMap".(ˆŞ›Ãüÿÿÿÿ8áÌ‰İ÷1J$77f1e525-1316-40c6-817d-e3687d7eea65
 ´
-java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ş¹°ôıÿÿÿÿ8áÌ‰İ÷1J$ad7f92ed-1b78-4aab-aea1-3f44f957f907
+java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ş¹°ôıÿÿÿÿ8áÌ‰İ÷1J$7885fb78-3fec-4fd2-bdf0-e4435e17a77b
 ¸
-java:S1319r"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¶äÓùÿÿÿÿ8âÌ‰İ÷1J$29553b78-9dc2-4b8f-85bb-147209f4589d
+java:S1319l"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¶äÓùÿÿÿÿ8âÌ‰İ÷1J$cc4d9e9a-0383-4413-8598-3b91faebb33d
  
-java:S1104"XMake productsList a static final constant or non-public and provide accessors if needed.(ş¹°ôıÿÿÿÿ8ãÌ‰İ÷1J$14da0a8b-84ef-43cd-a7bc-83c7d4a8465e
+java:S1104"XMake productsList a static final constant or non-public and provide accessors if needed.(ş¹°ôıÿÿÿÿ8ãÌ‰İ÷1J$0d08d843-4f62-45c7-a696-1438b5843f3b
  
-java:S1104"]Make interestsObserver a static final constant or non-public and provide accessors if needed.(•×¢¤8äÌ‰İ÷1J$1114df31-1875-44f0-88d6-33ad3708abc8
+java:S1104"]Make interestsObserver a static final constant or non-public and provide accessors if needed.(•×¢¤8äÌ‰İ÷1J$bb76ebe3-165d-4bb7-896e-1182d7b70a72
 ’
-java:S1104ˆ"OMake nis a static final constant or non-public and provide accessors if needed.(œœ×P8äÌ‰İ÷1J$6d7d8c43-f6fd-4fc6-947f-e2e6c4a21f84
+java:S1104‚"OMake nis a static final constant or non-public and provide accessors if needed.(œœ×P8äÌ‰İ÷1J$472e3cc2-6f1c-4ce6-bb77-07e516c90464
 “
-java:S1104‰"OMake nos a static final constant or non-public and provide accessors if needed.(ıÀÏ‚8äÌ‰İ÷1J$9ef0eae9-7f2d-42ef-9338-0fd3123a7db1
-œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8èÌ‰İ÷1J$0abf04d8-fe96-4147-af37-da4ffe7b4b9c
-	java:S116"[Rename this field "notification_oos" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”†¿€8ôÌ‰İ÷1J$d4b34317-b954-4e44-b781-4fc35bc1b1fc
-¢	java:S116"[Rename this field "notification_ois" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·­“ˆùÿÿÿÿ8ôÌ‰İ÷1J$707b34a7-8c16-46d9-8ab1-b0d041b229bb
+java:S1104ƒ"OMake nos a static final constant or non-public and provide accessors if needed.(ıÀÏ‚8äÌ‰İ÷1J$a191981f-bcc9-4e27-882d-bbe9f4fd11f2
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8èÌ‰İ÷1J$ea979f8a-f3df-4f0e-a258-38425692c35a
+’
+java:S2095r"JUse try-with-resources or close this "ServerSocket" in a "finally" clause.(íîÁ¿ùÿÿÿÿ8š¨Æİ÷1J$bbe4bcdc-90e8-4d28-9c41-e4aa97cfc43f
+	java:S116"[Rename this field "notification_oos" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”†¿€8ôÌ‰İ÷1J$2083e147-5a30-4d26-af15-1b5b155bf1c8
+¢	java:S116"[Rename this field "notification_ois" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·­“ˆùÿÿÿÿ8ôÌ‰İ÷1J$e3f08f8e-37e0-4582-b325-a589847660b9
 d
-java:S1170"!Make this final field static too.(³àÀ™8öÌ‰İ÷1J$a28ee1f1-0562-4eab-a400-e4b4c388fc37
-ƒ	java:S125,"<This block of commented-out lines of code should be removed.(¦ÎÊ­ıÿÿÿÿ8şÌ‰İ÷1J$fdb062eb-d516-4d9e-9b16-6bc30625e907
-|	java:S125A"<This block of commented-out lines of code should be removed.(½ó=8Í‰İ÷1J$9b49f16e-0779-447f-8e80-057200b85df3
-ƒ	java:S125C"<This block of commented-out lines of code should be removed.(Ğµ¶øÿÿÿÿ8‚Í‰İ÷1J$e8684e63-a8f8-4dc2-9c03-a5a6cd55915c
-ƒ	java:S125`"<This block of commented-out lines of code should be removed.(è¼®Úûÿÿÿÿ8ˆÍ‰İ÷1J$a4ebf5bc-5473-4e4f-9131-fcfa5b7373f8
-ƒ	java:S125d"<This block of commented-out lines of code should be removed.(Ì²ÿËùÿÿÿÿ8‰Í‰İ÷1J$46c92d5f-d63e-4dc9-99bf-ba2519dbcb6d
+java:S1170"!Make this final field static too.(³àÀ™8öÌ‰İ÷1J$9c59cf78-3624-4097-8dbf-d131b9af14a6
+ƒ	java:S125,"<This block of commented-out lines of code should be removed.(¦ÎÊ­ıÿÿÿÿ8şÌ‰İ÷1J$bba09815-05d9-4f3f-a169-d894fd8547d6
+|	java:S125A"<This block of commented-out lines of code should be removed.(½ó=8Í‰İ÷1J$3f83a1d8-fc87-4370-a948-f76b7aafd768
+ƒ	java:S125C"<This block of commented-out lines of code should be removed.(Ğµ¶øÿÿÿÿ8‚Í‰İ÷1J$7976dd78-7cbf-46cb-be49-5c2536535142
+ƒ	java:S125Z"<This block of commented-out lines of code should be removed.(è¼®Úûÿÿÿÿ8ˆÍ‰İ÷1J$9d9a222c-44d9-4af1-abbf-551fb720b627
+ƒ	java:S125^"<This block of commented-out lines of code should be removed.(Ì²ÿËùÿÿÿÿ8‰Í‰İ÷1J$116319bd-cf88-425a-973a-50ac5affd40b
 }
-java:S1161v":Add the "@Override" annotation above this method signature(“–ış8Í‰İ÷1J$266268c4-4679-440f-bcbc-397271ad4c22
-~	java:S125z"<This block of commented-out lines of code should be removed.(Îª¸Û8Í‰İ÷1J$6603a0dd-39db-4064-bfda-e00611be1cd1
+java:S1161p":Add the "@Override" annotation above this method signature(“–ış8Í‰İ÷1J$009a9653-af9e-4dd6-a1ed-ec73772d0e6d
+~	java:S125t"<This block of commented-out lines of code should be removed.(Îª¸Û8Í‰İ÷1J$d62a14fc-21f2-4218-aac2-5e79826f0c78
 ‰
-java:S2147™"ECombine this catch with the one at line 151, which has the same body.(ıàÑÎ8•Í‰İ÷1J$a5357024-2e5a-4e57-93ec-66d4a475861e
-„	java:S125”"<This block of commented-out lines of code should be removed.(Ÿ”Œºúÿÿÿÿ8–Í‰İ÷1J$19d69b60-703f-43de-87f1-d1992f053f74
-„	java:S125£"<This block of commented-out lines of code should be removed.(—Ûóäûÿÿÿÿ8—Í‰İ÷1J$837aae63-8e04-4d99-9954-a88540e98edf
-	java:S125¥"<This block of commented-out lines of code should be removed.(Ç™Ÿä8˜Í‰İ÷1J$5491c3b6-8dd9-4cc7-ac80-5bd60c46efc3
-„	java:S125§"<This block of commented-out lines of code should be removed.(—Ûóäûÿÿÿÿ8˜Í‰İ÷1J$56b7b3fd-c7c2-4f48-89f1-d73e00a25428
+java:S2147“"ECombine this catch with the one at line 145, which has the same body.(ıàÑÎ8•Í‰İ÷1J$2cebf37b-44e3-4254-8c6b-723417bfc20f
+„	java:S125"<This block of commented-out lines of code should be removed.(Ÿ”Œºúÿÿÿÿ8–Í‰İ÷1J$bd37ab55-668a-4187-af70-e915bbd062ce
+n
+java:S1128"+Remove this unused import 'Model.Requests'.(å—ìÅ8Ü©Æİ÷1J$88566fb9-07b0-4129-87bf-c1fe854eb136

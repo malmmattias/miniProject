@@ -19,7 +19,6 @@ import static java.lang.Thread.sleep;
 public class ClientThread implements Runnable {
     public ObjectInputStream is = null;
     public ObjectOutputStream os = null;
-    public ObjectOutputStream notiOS = null;
     private final Server server;
 
     private final Socket clientSocket;
@@ -112,13 +111,7 @@ public class ClientThread implements Runnable {
                         String username = request.getUsername();
                         String interest = request.getInterest();
                         server.interestsObserver.subscribe(username, interest);
-                        //System.out.println("Server: "+username+" has registered interest "+interest);
 
-                            /*
-                            ArrayList<String> usernames = interestsObserver.notify("mac");
-                            for (String user : usernames) {
-                                //System.out.println(user);
-                            }*/
                     }
 
                     if (request instanceof SearchProductRequest spr) {
@@ -153,46 +146,6 @@ public class ClientThread implements Runnable {
                             int i = server.products.findAndReplace(server.productsList.get(clientChoiceIndexed));
                             //System.out.println(i+"Q");
                             server.productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
-
-
-
-                            //int clientChoice = Integer.parseInt (data) - 1;
-                            //System.out.println(p.toString2());
-
-
-
-                            //System.out.println("CCC" + clientChoice);
-
-                                /*
-                                if (clientChoice > -1) { //above zero means the client decided to buy a product
-
-                                    Product purchase = productsList.get(clientChoice);
-                                    purchase.toString2();
-                                    purchase.setBuyer(userNameImportant);
-
-                                    //int i = products.findIndex(purchase);
-
-                                    //products.get(i).setBuyer(userNameImportant);
-
-                                    //String username = request.getUsername();
-                                    //purchase.setBuyer(username);
-
-                                    //products.overwrite(i, purchase);
-                                }*/
-
-                                    /*
-                                    boolean permissionGranted = askPermission(request.getUsername(), purchase);
-
-                                    //System.out.println("PQ " + permissionGranted);
-                                    int i = products.findIndex(purchase);
-
-                                    purchase.setStatus(Status.SOLD);
-
-                                    products.overwrite(i, purchase);
-                                    }*/
-
-
-
 
 
                         } else {
@@ -249,22 +202,6 @@ public class ClientThread implements Runnable {
                             }
                         }
 
-                        //}
-
-                        if(11==28) {
-
-                            for (Product product : cpr.getBuyerRequests()) {
-                                product.toString2();
-
-                                if (product.getStatus().equals(Status.PENDING)) {
-
-                                    String buyerName = product.getBuyer();
-                                    String sellerName = product.getSeller();
-
-                                    completeTransaction(buyerName, sellerName, product);
-                                }
-                            }
-                        }
                     }
 
                     if (request instanceof BuyProductRequest) {
@@ -290,10 +227,6 @@ public class ClientThread implements Runnable {
                         String psWord = ((VerifyUserRequest) request).getPsWord();
 
                         boolean verification = Objects.equals(server.loginCredentials.get(usrName), psWord);
-
-                        if(verification) {
-                            //notification_oos.put(usrName, notiOS); //Save oos for notifications channel
-                        }
 
                         os.writeObject(verification);
                     }
@@ -330,72 +263,6 @@ public class ClientThread implements Runnable {
 
         }
 
-        private boolean askPermission(String usernameBuyer, Product purchase) {
-            String usernameSeller = purchase.getSeller();
-
-            String permission = STR."PERMISSION: Do you, \{usernameSeller}, agrre to sell product \{purchase.getName()} for \{purchase.getPrice()}to \{usernameBuyer}? y/n";
-
-            boolean permissionGranted = false;
-
-
-            try {
-                ObjectOutputStream objectz = server.notification_oos.get(usernameSeller);
-                objectz.writeObject(permission);
-                objectz.flush();
-
-                String response = (String) server.notification_ois.get(usernameSeller).readObject();
-
-                if(response.equals("y")){
-                    permissionGranted = true;
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            return permissionGranted;
-        }
-
-            /*
-            private boolean productNameExists(String newProductName) {
-                for(int i = 0; i < products.size(); i++) {
-                    String productName = products.get(i).getName();
-                    if (Objects.equals(productName, newProductName)) {
-                        return true;
-                    } //Detta är en tillfällig lösning som söker används för att
-                    //verifigera om ny sell request matchar någons intressen
-                    //Den bör slås ihop med SearchProductRequest s
-                    //Martin
-                }
-                return false;
-            }*/
-
-            /*
-            private void checkForMatchingInterests(Product product) {
-                String name = product.getName().toUpperCase();
-                List<String> list = getUsernamesWithInterest(name);
-                //System.out.println("Server: Selling a new product, here's all users with matching interests");
-                for (String s : list){
-                    //System.out.println("-" + s);
-                }
-            }*/
-
-        public List<String> getUsernamesWithInterest(String interest) {
-            List<String> matchingUsernames = new ArrayList<>();
-
-            for (Map.Entry<String, ArrayList<String>> entry : server.userInterests.entrySet()) {
-                String username = entry.getKey();
-                ArrayList<String> userInterestsList = entry.getValue();
-
-                if (userInterestsList.contains(interest)) {
-                    matchingUsernames.add(username);
-                }
-            }
-            //Fortsätta här imorgon
-            return matchingUsernames;
-        }
-
         private ArrayList<Product> createUnfilteredSearch(String productName) {
             for (int i = 0; i < server.products.size(); i++) {
                 Product product = server.products.get(i);
@@ -421,15 +288,8 @@ public class ClientThread implements Runnable {
         }
     }
 
-    /**
-     * The Writer class is a Runnable class that sends messages to the clients. The run method calls the updateConnections
-     * and checkUnsentMessages methods every 5 seconds. The updateConnections method sends the connectedUsers array to all
-     * clients if it has changed. The checkUnsentMessages method sends any unsent messages to the receivers.
-     */
     private class Writer implements Runnable {
-        /**
-         * The run method calls the updateConnections and checkUnsentMessages methods every 5 seconds.
-         */
+
         @Override
         public void run() {
             while (true) {
@@ -439,11 +299,6 @@ public class ClientThread implements Runnable {
                     throw new RuntimeException(e);
                 }
             }
-        }
-
-
-        public void sendMessage() throws IOException {
-
         }
     }
 

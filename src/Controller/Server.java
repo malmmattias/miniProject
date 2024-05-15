@@ -73,12 +73,6 @@ public class Server extends Thread {
         purchaseHistory.put(name, new ArrayList<>());
     }
 
-    /**
-     * This can be used to modify a map whenever the key is a string and the value is an ArrayList of strings.
-     * @param name the key
-     * @param newListItem the ArrayList
-     * @param map the map to extend
-     */
     public void extendMap(String name, String newListItem, Map<String, ArrayList<String>> map) {
         ArrayList<String> purchases = map.get(name);
         if (purchases == null) {
@@ -155,16 +149,6 @@ public class Server extends Thread {
             }
         }
     }
-
-
-
-
-    public void clearConsole() {
-        //System.out.println();
-        for (int i = 0; i < 100; i++) {
-            //System.out.print(".");
-        }
-        //System.out.println();
-    }
+    
 }
 

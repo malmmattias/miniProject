@@ -1,6 +1,6 @@
 
-•	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°ÎJ$1b07c446-1774-4d9e-a063-9b3d959092f8
-v
-java:S1854":Remove this useless assignment to local variable "client".(·¶¢­J$7f612712-d35f-4b20-a1bc-69f25dd5e47e
-g
-java:S1481"+Remove this unused "client" local variable.(·¶¢­J$1d12a8ff-cdda-486b-9e3d-f04526914cbf
+•	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°ÎJ$dd26e391-07d0-41ae-8756-a82dfad1b9a6
+\
+java:S1854":Remove this useless assignment to local variable "server".(ë‡õ¸ÿÿÿÿÿ8­¥ªÝ÷1
+M
+java:S1481"+Remove this unused "server" local variable.(ë‡õ¸ÿÿÿÿÿ8µ¥ªÝ÷1
