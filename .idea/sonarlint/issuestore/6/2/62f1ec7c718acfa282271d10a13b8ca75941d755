@@ -1,6 +1,12 @@
 
 ¸
-java:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".( ¤Šûÿÿÿÿ8ô­Ø÷1J$5ab005f7-7e9c-42e1-a171-6164b86998e0
+java:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".( ×¡òşÿÿÿÿ8ã­½Ù÷1J$b2bfd785-fdca-4372-a4cd-9ad92e058f97
 ¯
-java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ùõ´÷8“ô­Ø÷1J$99de1dc9-0347-4dcd-a111-957704417116
-œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8˜ô­Ø÷1J$7c450f31-a0a3-44a7-b788-e6bbbe9fea0b
+java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ùõ´÷8ä­½Ù÷1J$ccc82aa5-3e79-4359-a25c-43cc82eaa14b
+˜	java:S117!"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³Ô±ûÿÿÿÿ8å­½Ù÷1J$4968cdf5-5958-44b2-955c-2cad6d4874fc
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8Äı¦Ù÷1J$a318f55e-a12c-4f1d-b4c9-8ec577121580
+‚
+java:S1118":Add a private constructor to hide the implicit public one.(ê©‰Ïûÿÿÿÿ8Ñ®½Ù÷1J$f926c0a7-723b-40e6-a8ee-bd4ccd05bcce
+ƒ	java:S125("<This block of commented-out lines of code should be removed.(‡±úÔıÿÿÿÿ8Û®½Ù÷1J$e641b560-ede7-4317-8a84-0ddef0369237
+…
+java:S1126+"BReplace this if-then-else statement by a single method invocation.(Â™±£8Ü®½Ù÷1J$c1eb879e-6b00-4de2-8ef4-e1f30368b98e

@@ -19,9 +19,9 @@ public class Server extends Thread {
     private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
     private ArrayList<Product> productsList;
     private Observer interestsObserver = new Observer();
-    private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
+    final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
     private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
-    private final ServerHelper helper = new ServerHelper();
+    private static final ServerHelper helper = new ServerHelper();
 
     //Change this later
     private final int port = 1441;
@@ -205,56 +205,26 @@ public class Server extends Thread {
                 reading();
             }
 
-            /**
-             * Method that checks for messages from a client and sends them to the writer.
-             * Also checks if a client has disconnected from the server.
-             */
             private synchronized void reading() {
                 try {
                     while (isRunning) {
-                        //System.out.println("Server: Client connected");
-
-                        //Gson gson = new Gson();
-                        //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                         Request request = (Request) is.readObject();
 
                         if (request instanceof SellProductRequest sellpr) {
-                            //System.out.println("Server: SellProductRequest");
-                            int sizeBfr = products.size();
-                            Product product = sellpr.getProduct();
-                            products.add(product);
-
-                            products.toStringMethod();
-                            //System.out.println("Update from sellrequest");
-
-                            int sizeAftr = products.size();
-                            if (sizeAftr > sizeBfr) {
-                                os.writeObject(true);
-                            } else {
-                                os.writeObject(false);
-                            }
-
-                            String productName = sellpr.getProduct().getName();
-                            String notification = "Notification: "+ productName + " has been added to the products list";
-
-                            //checkForMatchingInterests(product);
-                            ArrayList<String> usernames = interestsObserver.notify(productName);
-                            for (String username : usernames) {
-                                ObjectOutputStream channel = notification_oos.get(username);
-                                channel.writeObject(notification);
-                                channel.flush();
-                            }
-
+                            String result = helper.sell(sellpr, products, os, notification_oos, interestsObserver);
+                            System.out.println(result);
                         }
 
                         if (request instanceof RegisterInterestRequest){
-                            //System.out.println("Server: RegisterInterestRequest");
                             String username = request.getUsername();
                             String interest = request.getInterest();
                             interestsObserver.subscribe(username, interest);
                         }
 
                         if (request instanceof SearchProductRequest spr) {
+
+                            helper.searchProduct()
+
                             String userNameImportant = spr.getUsername();
                             //System.out.println("SEARCH " + spr.getUsername());
 
