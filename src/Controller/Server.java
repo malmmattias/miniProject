@@ -11,39 +11,30 @@ import java.util.*;
 
 import Model.Requests.*;
 
-public class Server extends Thread {
-    private final Map<String, String> loginCredentials = new HashMap<>();
-    private final Map<String, ArrayList<String>> userInterests = new HashMap<>();
-    private final Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
-    private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
-    private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
-    private ArrayList<Product> productsList;
-    private Observer interestsObserver = new Observer();
-    private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
-    private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
+import static Model.Status.SOLD;
 
-    //Change this later
-    private final int port = 1441;
+public class Server extends Thread {
+    private final Map<String, ArrayList<String>> purchaseHistory = new HashMap<>();
+    private final Observer interestsObserver = new Observer();
+    private final Map<String, String> loginCredentials = new HashMap<>();
+    private final ResizableProductsArray<Product> products = new ResizableProductsArray<>();
+    //private final HashMap<String, ArrayList<Product>> purchaseReq = new HashMap<>();
+    private ArrayList<Product> productsList;
+    private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
+    //private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
+    private int currId = 100;
 
     public Server() {
-
-
-
-
         addUser("mary", "abc");
         addUser("john", "abc");
-
 
         run2();
 
         start();
         testProductArray();
 
-
         extendMap("john", "anItemJohnBought", purchaseHistory);
-        //extendMap("john", "macBook", purchaseHistory);
-
-
+        extendMap("john", "macBook", purchaseHistory);
     }
 
     // To test that the products can be found
@@ -53,19 +44,18 @@ public class Server extends Thread {
                 .itemCondidtion(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
+        product1.setId(currId++);
 
         Product product2 = new Product.Builder("mac", 2000, 2021, "john", "none")
                 .color("Silver")
                 .itemCondidtion(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
+        product2.setId(currId++);
 
         products.add(product1);
         products.add(product2);
-        //System.out.println("Products in the array:");
-        for (int i = 0; i < products.size(); i++) {
-            //System.out.println(products.get(i));
-        }
+
     }
 
     private void addUser(String name, String password) {
@@ -108,7 +98,6 @@ public class Server extends Thread {
 
         });
         notificationThread.start(); // Start the thread
-
     }
 
     public ArrayList<String> getPurchaseHistory(String usrName) {
@@ -117,6 +106,7 @@ public class Server extends Thread {
 
     public void run() {
         try {
+            int port = 1441;
             ServerSocket serverSocket = new ServerSocket(port);
 
             //System.out.println("Server: skapad");
@@ -124,17 +114,17 @@ public class Server extends Thread {
                 Socket socket = serverSocket.accept();
 
 
-                ClientThread ch = new ClientThread(socket, null);
+                ClientThread ch = new ClientThread(socket);
                 new Thread(ch).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     public class NotificationThread implements Runnable {
-        public ObjectInputStream nis = null;
-        public ObjectOutputStream nos = null;
+        public ObjectInputStream nis;
+        public ObjectOutputStream nos;
 
         public NotificationThread(Socket nSocket) throws IOException {
             this.nos = new ObjectOutputStream(nSocket.getOutputStream());
@@ -144,13 +134,9 @@ public class Server extends Thread {
         public void run() {
             try {
                 String username = (String) nis.readObject();
-
-                //System.out.println("YEEreeeeeEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSS!");
                 notification_oos.put(username, nos);
-                notification_ois.put(username, nis);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+                //notification_ois.put(username, nis);
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -160,17 +146,12 @@ public class Server extends Thread {
     public class ClientThread implements Runnable {
         public ObjectInputStream is = null;
         public ObjectOutputStream os = null;
-        public ObjectOutputStream notiOS = null;
 
         private final Socket clientSocket;
-        private final Socket notificationSocket;
-
-        private Writer writer;
 
 
-        private ClientThread(Socket clientSocket, Socket socket2) {
+        private ClientThread(Socket clientSocket) {
             this.clientSocket = clientSocket;
-            this.notificationSocket = socket2;
         }
 
         public void run() {
@@ -179,9 +160,9 @@ public class Server extends Thread {
                 this.is = new ObjectInputStream(clientSocket.getInputStream());
                 //this.notiOS = new ObjectOutputStream(notificationSocket.getOutputStream());
 
-                writer = new Writer();
+                //writer = new Writer();
 
-                new Reader(writer);
+                new Reader();
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -194,13 +175,12 @@ public class Server extends Thread {
          * The class checks for messages from a client and sends them to the writer.
          */
         private class Reader {
-            private final Writer writer;
             boolean isRunning = true;
 
-            public Reader(Writer writer) {
-                this.writer = writer;
+            public Reader() {
+                //this.writer = writer;
 
-                new Thread(writer).start();
+                new Thread().start();
                 reading();
             }
 
@@ -217,10 +197,15 @@ public class Server extends Thread {
                         //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                         Request request = (Request) is.readObject();
 
+                        if(request instanceof ExitRequest){
+                            isRunning =false;
+                        }
+
                         if (request instanceof SellProductRequest sellpr) {
                             //System.out.println("Server: SellProductRequest");
                             int sizeBfr = products.size();
                             Product product = sellpr.getProduct();
+                            product.setId(currId++);
                             products.add(product);
 
                             products.toStringMethod();
@@ -253,11 +238,6 @@ public class Server extends Thread {
                             interestsObserver.subscribe(username, interest);
                             //System.out.println("Server: "+username+" has registered interest "+interest);
 
-                            /*
-                            ArrayList<String> usernames = interestsObserver.notify("mac");
-                            for (String user : usernames) {
-                                //System.out.println(user);
-                            }*/
                         }
 
                         if (request instanceof SearchProductRequest spr) {
@@ -289,50 +269,12 @@ public class Server extends Thread {
 
                                 int clientChoiceIndexed = (int) is.readObject();
 
-                                int i = products.findAndReplace(productsList.get(clientChoiceIndexed));
-                                //System.out.println(i+"Q");
-                                productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
-
-
-
-                                //int clientChoice = Integer.parseInt (data) - 1;
-                                //System.out.println(p.toString2());
-
-
-
-                                //System.out.println("CCC" + clientChoice);
-
-                                /*
-                                if (clientChoice > -1) { //above zero means the client decided to buy a product
-
-                                    Product purchase = productsList.get(clientChoice);
-                                    purchase.toString2();
-                                    purchase.setBuyer(userNameImportant);
-
-                                    //int i = products.findIndex(purchase);
-
-                                    //products.get(i).setBuyer(userNameImportant);
-
-                                    //String username = request.getUsername();
-                                    //purchase.setBuyer(username);
-
-                                    //products.overwrite(i, purchase);
-                                }*/
-
-                                    /*
-                                    boolean permissionGranted = askPermission(request.getUsername(), purchase);
-
-                                    //System.out.println("PQ " + permissionGranted);
-                                    int i = products.findIndex(purchase);
-
-                                    purchase.setStatus(Status.SOLD);
-
-                                    products.overwrite(i, purchase);
-                                    }*/
-
-
-
-
+                                if(clientChoiceIndexed>-1) {
+                                    //System.out.println(i+"Q");
+                                    productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
+                                    String sellerName = productsList.get(clientChoiceIndexed).getSeller();
+                                    sendNotification("You received a request, ", sellerName);
+                                }
 
                             } else {
                                 os.writeObject(productFound);
@@ -348,7 +290,7 @@ public class Server extends Thread {
 
                             //if (!cpr.isVerified()) {
 
-                                String username = request.getUsername();
+                                String username = cpr.getUsername();
 
                                 ArrayList<Product> buyerRequests = new ArrayList<>();
 
@@ -356,7 +298,7 @@ public class Server extends Thread {
                                     Product product = products.get(i);
 
                                     if (product.getBuyer() != null
-                                            && product.getBuyer() != "none"
+                                            && !Objects.equals(product.getBuyer(), "none")
                                             && product.getSeller().equals(username)) {
                                         //System.out.println("LK" + product.getBuyer());
                                         buyerRequests.add(product);
@@ -377,44 +319,31 @@ public class Server extends Thread {
 
                                             String buyerName = product.getBuyer();
                                             String sellerName = product.getSeller();
+                                            int id = product.getId();
 
                                             completeTransaction(buyerName, sellerName, product);
 
                                             extendMap(buyerName, product.getName(), purchaseHistory);
 
-                                            product.setStatus(Status.SOLD);
+                                            //System.out.println(products.findAndReplace(product) + "id" + id);
+
+                                            for (int i =0; i<products.size(); i++){
+                                                if (products.get(i).getId() == id){
+                                                    product.setStatus(SOLD);
+                                                    products.overwrite(i, product);
+                                                }
+                                            }
+
                                         }
 
                                     }
                                 }
 
-                            //}
-
-                            if(11==28) {
-
-                                for (Product product : cpr.getBuyerRequests()) {
-                                    product.toString2();
-
-                                    if (product.getStatus().equals(Status.PENDING)) {
-
-                                        String buyerName = product.getBuyer();
-                                        String sellerName = product.getSeller();
-
-                                        completeTransaction(buyerName, sellerName, product);
-                                    }
-                                }
-                            }
                         }
 
-                        if (request instanceof BuyProductRequest) {
-                            String buyer = request.getUsername();
-                            ArrayList<Product> itemsToBuy = ((BuyProductRequest) request).getProducts();
-                            purchaseReq.put(buyer, itemsToBuy);
-                        }
-
-                        if (request instanceof AddUserRequest) {
-                            String username = request.getUsername();
-                            String password = request.getPassWord();
+                        if (request instanceof AddUserRequest aur) {
+                            String username = aur.getUsername();
+                            String password = aur.getPassWord();
                             addUser(username, password);
                         }
 
@@ -425,15 +354,11 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof VerifyUserRequest vur) {
-                            String usrName = ((VerifyUserRequest) request).getUsrName();
-                            String psWord = ((VerifyUserRequest) request).getPsWord();
+                            String usrName = vur.getUsrName();
+                            String psWord = vur.getPsWord();
 
                             boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
-
-                            if(verification) {
-                                //notification_oos.put(usrName, notiOS); //Save oos for notifications channel
-                            }
-
+                            //System.out.println(verification);
                             os.writeObject(verification);
                         }
 
@@ -450,90 +375,22 @@ public class Server extends Thread {
                 }
             }
 
+            private void sendNotification(String s, String sellerName) throws IOException {
+                ObjectOutputStream os = notification_oos.get(sellerName);
+                if(os!=null){
+                    os.writeObject(s);
+                }
+            }
+
             private void completeTransaction(String buyerName, String sellerName, Product product) throws IOException {
                 String salesConfirmation = STR."Congratulations transaction has been completed. From \{sellerName} to \{buyerName} for \{product.getName()} for \{product.getPrice()} kr";
 
                 //System.out.println(salesConfirmation);
-
-                ObjectOutputStream channel = notification_oos.get(buyerName);
-                if (channel!=null) {
-                    channel.writeObject(salesConfirmation);
-                    channel.flush();
-                }
-
-                ObjectOutputStream channel2 = notification_oos.get(sellerName);
-                if (channel2!=null) {
-                    channel2.writeObject(salesConfirmation);
-                    channel2.flush();
-                }
+                sendNotification(salesConfirmation, buyerName);
+                sendNotification(salesConfirmation, sellerName);
 
             }
 
-            private boolean askPermission(String usernameBuyer, Product purchase) {
-                String usernameSeller = purchase.getSeller();
-
-                String permission = STR."PERMISSION: Do you, \{usernameSeller}, agrre to sell product \{purchase.getName()} for \{purchase.getPrice()}to \{usernameBuyer}? y/n";
-
-                boolean permissionGranted = false;
-
-
-                try {
-                    ObjectOutputStream objectz = notification_oos.get(usernameSeller);
-                    objectz.writeObject(permission);
-                    objectz.flush();
-
-                    String response = (String) notification_ois.get(usernameSeller).readObject();
-
-                    if(response.equals("y")){
-                        permissionGranted = true;
-                    }
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                return permissionGranted;
-            }
-
-            /*
-            private boolean productNameExists(String newProductName) {
-                for(int i = 0; i < products.size(); i++) {
-                    String productName = products.get(i).getName();
-                    if (Objects.equals(productName, newProductName)) {
-                        return true;
-                    } //Detta är en tillfällig lösning som söker används för att
-                    //verifigera om ny sell request matchar någons intressen
-                    //Den bör slås ihop med SearchProductRequest s
-                    //Martin
-                }
-                return false;
-            }*/
-
-            /*
-            private void checkForMatchingInterests(Product product) {
-                String name = product.getName().toUpperCase();
-                List<String> list = getUsernamesWithInterest(name);
-                //System.out.println("Server: Selling a new product, here's all users with matching interests");
-                for (String s : list){
-                    //System.out.println("-" + s);
-                }
-            }*/
-
-            public List<String> getUsernamesWithInterest(String interest) {
-                List<String> matchingUsernames = new ArrayList<>();
-
-                for (Map.Entry<String, ArrayList<String>> entry : userInterests.entrySet()) {
-                    String username = entry.getKey();
-                    ArrayList<String> userInterestsList = entry.getValue();
-
-                    if (userInterestsList.contains(interest)) {
-                        matchingUsernames.add(username);
-                    }
-                }
-                //Fortsätta här imorgon
-                return matchingUsernames;
-            }
 
             private ArrayList<Product> createUnfilteredSearch(String productName) {
                 for (int i = 0; i < products.size(); i++) {
@@ -560,40 +417,7 @@ public class Server extends Thread {
             }
         }
 
-        /**
-         * The Writer class is a Runnable class that sends messages to the clients. The run method calls the updateConnections
-         * and checkUnsentMessages methods every 5 seconds. The updateConnections method sends the connectedUsers array to all
-         * clients if it has changed. The checkUnsentMessages method sends any unsent messages to the receivers.
-         */
-        private class Writer implements Runnable {
-            /**
-             * The run method calls the updateConnections and checkUnsentMessages methods every 5 seconds.
-             */
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        sleep(5000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-
-
-            public void sendMessage() throws IOException {
-
-            }
-        }
-
     }
 
-    public void clearConsole() {
-        //System.out.println();
-        for (int i = 0; i < 100; i++) {
-            //System.out.print(".");
-        }
-        //System.out.println();
-    }
 }
 
