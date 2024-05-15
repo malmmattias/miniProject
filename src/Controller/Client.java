@@ -20,29 +20,20 @@ import static java.lang.Thread.sleep;
 public class Client {
     private final ObjectOutputStream oos;
     private final ObjectInputStream ois;
-    private final Socket socket;
 
-    private String firstName;
-    private String lastName;
-    private Date birthDate;
-    private String email;
     private String username;
     private String password;
-    private String nothing;
     Scanner scanner = new Scanner(System.in);
-    private ArrayList<Product> cart = new ArrayList<Product>();
     private Request currRequest;
-    private Object currResponse;
     private int minPrice = 0;
     private int maxPrice = 1000000;
     private ItemCondition itemCondition = ItemCondition.USED;
-    private final int port = 1441;
-    private final int nPort = 8000;
     private final String host = "127.0.0.1";
 
     public Client() {
         try {
-            socket = new Socket(host, port);
+            int port = 1441;
+            Socket socket = new Socket(host, port);
             System.out.println("Client: connected");
             ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
@@ -86,11 +77,9 @@ public class Client {
 
                 }
 
-                } catch (IOException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+                }
 
         });
         notificationThread.start();
@@ -163,76 +152,11 @@ public class Client {
             oos.writeObject(buyerRequests);
             oos.flush();
 
-            /*
-            ConfirmationRequest()
-
-
-
-            if (buyerRequests == null || buyerRequests.isEmpty()) {
-                System.out.println("You have zero requests");
-            } else {
-                for (Product p : buyerRequests) {
-                    // Process each request, e.g., set status, add to seller response
-                    p.setStatus(Status.SOLD);
-                    sellerResponse.add(p);
-                }
-                cpr.setBuyerRequests(sellerResponse);
-                cpr.setVerified(true);
-
-                // Send seller response back to server
-                oos.writeObject(cpr);
-                oos.flush();
-            }*/
-
         } catch (EOFException e) {
             // Handle EOFException gracefully (e.g., log the error)
             System.err.println("EOFException: Error reading object from input stream.");
-            e.printStackTrace();
         } catch (IOException | ClassNotFoundException e) {
             // Handle other IO or class not found exceptions
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    private void showCart() {
-        Product product = new Product.Builder("MacBook", 100, 2024, username, "none")
-                .color("Red")
-                .itemCondidtion(ItemCondition.USED)
-                .status(Status.SOLD)
-                .build();
-        addToCart(product);
-        product = new Product.Builder("Iphone", 100, 2024, username, "none")
-                .color("Red")
-                .itemCondidtion(ItemCondition.USED)
-                .status(Status.AVAILABLE)
-                .build();
-        addToCart(product);
-        System.out.println("Products in your cart:");
-        for (Product p : cart) {
-            System.out.println(p.getName());
-        }
-        System.out.println("Do you want to check out or continue shopping?");
-        System.out.println("1. Check out");
-        System.out.println("2. Continue shopping");
-        int input = scanner.nextInt();
-        scanner.nextLine();
-
-
-        if (input == 1) {
-            sendPurchaseRequest(cart);
-            System.out.println("Your purchase request has been sent!");
-            clearCart();
-        }
-    }
-
-    private void sendPurchaseRequest(ArrayList<Product> cart) {
-        currRequest = new BuyProductRequest(cart, username);
-        currRequest.setUsername(username);
-        try {
-            oos.writeObject(currRequest);
-            oos.flush();
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -240,7 +164,6 @@ public class Client {
     private void purchaseHistory() {
         currRequest = new PurchaseHistoryRequest(username);
         currRequest.setUsername(username);
-        currResponse = null;
         try {
             oos.writeObject(currRequest);
             ArrayList<String> history = (ArrayList<String>) ois.readObject();
@@ -266,7 +189,6 @@ public class Client {
 
     private void registerInterest() {
         System.out.println("Select Category to register interest in:");
-        scanner.nextLine();
         String interest = scanner.nextLine();
         currRequest = new RegisterInterestRequest(interest, username);
         currRequest.setUsername(username);
@@ -297,15 +219,12 @@ public class Client {
             ItemCondition searchCondition = getItemCondition();
             Boolean filtered = true;
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, searchCondition, filtered, username);
-            System.out.println("Jag når hit");
+            //System.out.println("Jag når hit");
         } else {
             Boolean filtered = false;
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition, filtered, username);
-            System.out.println("Jag nådde elseblocket");
+            //System.out.println("Jag nådde elseblocket");
         }
-
-
-        // currRequest = new SearchProductRequest(productName);
         boolean productFound = false;
 
         try {
@@ -328,7 +247,7 @@ public class Client {
                         }
                     //}
 
-                    addToCartOption(productsList);
+                    addToCartOption();
 
                 } else {
                     System.out.println("Product not found!" + "\n");
@@ -343,7 +262,7 @@ public class Client {
 
     }
 
-    private void addToCartOption(ArrayList<Product> products) throws IOException {
+    private void addToCartOption() throws IOException {
         System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
         String response = scanner.nextLine();
         int response2 = Integer.parseInt(response) -1;
@@ -447,7 +366,7 @@ public class Client {
                     break;
                 case "c":
                     System.out.println("Enter new color: ");
-                    nothing = scanner.nextLine(); //Bug
+                    String nothing = scanner.nextLine(); //Bug
                     String color = scanner.nextLine();
                     product.setColor(color);
                 case "n":
@@ -486,11 +405,11 @@ public class Client {
         String s = scanner.nextLine();
         if (Objects.equals(s, "y")) {
             System.out.println("Enter firstname: ");
-            firstName = scanner.nextLine();
+            String firstName = scanner.nextLine();
             System.out.println("Enter lastname: ");
-            lastName = scanner.nextLine();
+            String lastName = scanner.nextLine();
             System.out.println("Enter email: ");
-            email = scanner.nextLine();
+            String email = scanner.nextLine();
             System.out.println("Enter username: ");
             username = scanner.nextLine();
             System.out.println("Enter password: ");
@@ -549,18 +468,6 @@ public class Client {
         }
     }
 
-    public void addToCart(Product product) {
-        cart.add(product);
-    }
-
-    public void removeFromCart(Product product) {
-        cart.remove(product);
-    }
-
-    public void clearCart() {
-        cart.clear();
-    }
-
     private void enterBirthDate() {
         boolean validBirthDate = false;
         Pattern pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}"); // Regular expression for yyyy-MM-dd format
@@ -578,7 +485,7 @@ public class Client {
                     int month = Integer.parseInt(date.substring(5, 7));
                     int day = Integer.parseInt(date.substring(8, 10));
                     if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-                        birthDate = sdf.parse(date);
+                        Date birthDate = sdf.parse(date);
                         validBirthDate = true;
                         /*SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
                         String outputString = outputFormat.format(birthDate);
