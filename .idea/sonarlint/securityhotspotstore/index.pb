@@ -19,3 +19,9 @@ J
 src/Controller/Client.java,6/2/624f126aab36a1345c5c8e6a7262c6746caffea7
 R
 "src/Controller/ServerTestData.java,5/a/5a1eb45f7361dfa37a21ca741467bdab100b5b0f
+M
+src/Controller/RunServer.java,4/2/426ef5b118481747d590d6b9065eef0f93db32e3
+S
+#src/Model/Requests/ExitRequest.java,9/7/9763b001f66797eeb36acde10af4c11372b9de23
+F
+src/Model/Product.java,d/a/da634df1ff9b51b23ff2791c7d1444420c612dfe

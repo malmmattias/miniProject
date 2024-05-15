@@ -14,36 +14,25 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Thread.currentThread;
-import static java.lang.Thread.sleep;
-
 
 public class Client {
     private final ObjectOutputStream oos;
     private final ObjectInputStream ois;
-    private final Socket socket;
 
-    private String firstName;
-    private String lastName;
-    private Date birthDate;
-    private String email;
     private final String username;
     private String password;
-    private String nothing;
     Scanner scanner = new Scanner(System.in);
-    private ArrayList<Product> cart = new ArrayList<Product>();
+    private final ArrayList<Product> cart = new ArrayList<>();
     private Request currRequest;
-    private Object currResponse;
     private int minPrice = 0;
     private int maxPrice = 1000000;
-    private ItemCondition itemCondition = ItemCondition.USED;
-    private final int port = 1441;
-    private final int nPort = 8000;
+    private final ItemCondition itemCondition = ItemCondition.USED;
     private final String host = "127.0.0.1";
 
     public Client() {
         try {
-            socket = new Socket(host, port);
+            int port = 1441;
+            Socket socket = new Socket(host, port);
             System.out.println("Client: connected");
             ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
@@ -56,16 +45,10 @@ public class Client {
 
         username = askLoginData();
 
-
-
         notificationListener();
 
 
         listener();
-
-
-
-
     }
 
     private void notificationListener() {
@@ -105,8 +88,8 @@ public class Client {
         System.out.println("3. Register interest in product category.");
         System.out.println("4. Show purchase history.");
         //System.out.println("5. Display cart");
-        //System.out.println("6. Check purchase requests");
         System.out.println("5. Check purchase requests");
+        System.out.println("6. To exit");
         int choice = scanner.nextInt();
         scanner.nextLine();
         switch (choice) {
@@ -123,13 +106,22 @@ public class Client {
                 purchaseHistory();
                 break;
             case 5:
-                //showCart();
                 checkPurchaseRequests();
                 break;
             case 6:
-                //checkPurchaseRequests();
+                shutDown();
                 break;
         }
+    }
+
+    private void shutDown() {
+        try {
+            oos.writeObject(new ExitRequest(username));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Goodbye " + username);
+        System.exit(0);
     }
 
     private void checkPurchaseRequests() {
@@ -164,27 +156,6 @@ public class Client {
             oos.writeObject(buyerRequests);
             oos.flush();
 
-            /*
-            ConfirmationRequest()
-
-
-
-            if (buyerRequests == null || buyerRequests.isEmpty()) {
-                System.out.println("You have zero requests");
-            } else {
-                for (Product p : buyerRequests) {
-                    // Process each request, e.g., set status, add to seller response
-                    p.setStatus(Status.SOLD);
-                    sellerResponse.add(p);
-                }
-                cpr.setBuyerRequests(sellerResponse);
-                cpr.setVerified(true);
-
-                // Send seller response back to server
-                oos.writeObject(cpr);
-                oos.flush();
-            }*/
-
         } catch (EOFException e) {
             // Handle EOFException gracefully (e.g., log the error)
             System.err.println("EOFException: Error reading object from input stream.");
@@ -195,53 +166,9 @@ public class Client {
         }
     }
 
-
-    private void showCart() {
-        Product product = new Product.Builder("MacBook", 100, 2024, username, "none")
-                .color("Red")
-                .itemCondidtion(ItemCondition.USED)
-                .status(Status.SOLD)
-                .build();
-        addToCart(product);
-        product = new Product.Builder("Iphone", 100, 2024, username, "none")
-                .color("Red")
-                .itemCondidtion(ItemCondition.USED)
-                .status(Status.AVAILABLE)
-                .build();
-        addToCart(product);
-        System.out.println("Products in your cart:");
-        for (Product p : cart) {
-            System.out.println(p.getName());
-        }
-        System.out.println("Do you want to check out or continue shopping?");
-        System.out.println("1. Check out");
-        System.out.println("2. Continue shopping");
-        int input = scanner.nextInt();
-        scanner.nextLine();
-
-
-        if (input == 1) {
-            sendPurchaseRequest(cart);
-            System.out.println("Your purchase request has been sent!");
-            clearCart();
-        }
-    }
-
-    private void sendPurchaseRequest(ArrayList<Product> cart) {
-        currRequest = new BuyProductRequest(cart, username);
-        currRequest.setUsername(username);
-        try {
-            oos.writeObject(currRequest);
-            oos.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void purchaseHistory() {
         currRequest = new PurchaseHistoryRequest(username);
         currRequest.setUsername(username);
-        currResponse = null;
         try {
             oos.writeObject(currRequest);
             ArrayList<String> history = (ArrayList<String>) ois.readObject();
@@ -267,7 +194,6 @@ public class Client {
 
     private void registerInterest() {
         System.out.println("Select Category to register interest in:");
-        scanner.nextLine();
         String interest = scanner.nextLine();
         currRequest = new RegisterInterestRequest(interest, username);
         currRequest.setUsername(username);
@@ -298,11 +224,11 @@ public class Client {
             ItemCondition searchCondition = getItemCondition();
             Boolean filtered = true;
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, searchCondition, filtered, username);
-            System.out.println("Jag når hit");
+            //System.out.println("Jag når hit");
         } else {
             Boolean filtered = false;
             currRequest = new SearchProductRequest(productName, minPrice, maxPrice, itemCondition, filtered, username);
-            System.out.println("Jag nådde elseblocket");
+            //System.out.println("Jag nådde elseblocket");
         }
 
 
@@ -329,7 +255,7 @@ public class Client {
                         }
                     //}
 
-                    addToCartOption(productsList);
+                    addToCartOption();
 
                 } else {
                     System.out.println("Product not found!" + "\n");
@@ -344,7 +270,7 @@ public class Client {
 
     }
 
-    private void addToCartOption(ArrayList<Product> products) throws IOException {
+    private void addToCartOption() throws IOException {
         System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
         String response = scanner.nextLine();
         int response2 = Integer.parseInt(response) -1;
@@ -448,7 +374,7 @@ public class Client {
                     break;
                 case "c":
                     System.out.println("Enter new color: ");
-                    nothing = scanner.nextLine(); //Bug
+                    String nothing = scanner.nextLine(); //Bug
                     String color = scanner.nextLine();
                     product.setColor(color);
                 case "n":
@@ -483,32 +409,33 @@ public class Client {
     }
 
     private String askLoginData() {
-        System.out.println("Are you a new user? y/n");
-        String localized;
+        System.out.println("Are you a new user? type 'y' for yes or anything else for no");
+        String username;
         String s = scanner.nextLine();
         if (Objects.equals(s, "y")) {
             System.out.println("Enter firstname: ");
-            firstName = scanner.nextLine();
+            String firstName = scanner.nextLine();
             System.out.println("Enter lastname: ");
-            lastName = scanner.nextLine();
+            String lastName = scanner.nextLine();
             System.out.println("Enter email: ");
-            email = scanner.nextLine();
+            String email = scanner.nextLine();
             System.out.println("Enter username: ");
-            localized = scanner.nextLine();
+            username = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
             enterBirthDate();
             addUserToServer();
+            askLoginData();
         } else {
             System.out.println("Enter username: ");
-            localized = scanner.nextLine();
+            username = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
-            localized = verifyLogin(localized, password);
+            if (!verifyLogin(username, password)){
+                askLoginData();
+            }
         }
-
-        return localized;
-
+        return username;
     }
 
     private void addUserToServer() {
@@ -524,7 +451,7 @@ public class Client {
         System.out.println("Your login credentials are now saved on the server!");
     }
 
-    private String verifyLogin(String usrName, String psWord) {
+    private boolean verifyLogin(String usrName, String psWord) {
         currRequest = new VerifyUserRequest(usrName, psWord, username);
         boolean verification;
 
@@ -536,10 +463,10 @@ public class Client {
         }
         if (verification) {
             System.out.println("Welcome");
-            return usrName;
+            return true;
         } else {
             System.out.println("Wrong!");
-            return "";
+            return false;
         }
     }
 
@@ -547,18 +474,6 @@ public class Client {
         while (true) {
             menu();
         }
-    }
-
-    public void addToCart(Product product) {
-        cart.add(product);
-    }
-
-    public void removeFromCart(Product product) {
-        cart.remove(product);
-    }
-
-    public void clearCart() {
-        cart.clear();
     }
 
     private void enterBirthDate() {
@@ -578,7 +493,7 @@ public class Client {
                     int month = Integer.parseInt(date.substring(5, 7));
                     int day = Integer.parseInt(date.substring(8, 10));
                     if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-                        birthDate = sdf.parse(date);
+                        Date birthDate = sdf.parse(date);
                         validBirthDate = true;
                         /*SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
                         String outputString = outputFormat.format(birthDate);

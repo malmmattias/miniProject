@@ -1,33 +1,34 @@
 
-	java:S112M"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8òÃÌİ÷1J$d9091b00-0dc6-4c67-a6c5-45dac4b51c1a
-	java:S112{"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8óÃÌİ÷1J$3f25c14e-752f-4f3c-9d9b-9b1228082fe3
-	java:S112}"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8óÃÌİ÷1J$2177f0c6-edfc-45d8-ba57-dd1b60fdd535
+	java:S112J"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8òÃÌİ÷1J$d59ab81f-022e-458f-a799-286824ff864f
+	java:S112w"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8óÃÌİ÷1J$db75ed32-e9f5-4277-9a89-e9a5693258d0
+	java:S112y"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8óÃÌİ÷1J$31990a38-5930-4397-8415-028b38c19fe5
 °
-java:S1319"hThe type of "purchaseReq" should be an interface such as "Map" rather than the implementation "HashMap".(ˆŞ›Ãüÿÿÿÿ8÷ÃÌİ÷1J$52823fbd-fbdf-4624-8201-b47c90e62962
+java:S1319"hThe type of "purchaseReq" should be an interface such as "Map" rather than the implementation "HashMap".(ˆŞ›Ãüÿÿÿÿ8÷ÃÌİ÷1J$a4f1182f-07cf-4c15-b319-655b3038cbd0
 ´
-java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ş¹°ôıÿÿÿÿ8÷ÃÌİ÷1J$dce9255c-668f-476c-a664-9dd768c3ca77
+java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(ş¹°ôıÿÿÿÿ8÷ÃÌİ÷1J$9b069986-149a-4580-a1b5-6c0ff12bb5f5
 ¸
-java:S1319U"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¶äÓùÿÿÿÿ8÷ÃÌİ÷1J$4aad93ef-abfe-40b2-8a3b-7d82ce63b02e
+java:S1319R"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¶äÓùÿÿÿÿ8÷ÃÌİ÷1J$3e5bcbc6-ca61-4b5a-93d3-e7770cb3c285
  
-java:S1104"XMake productsList a static final constant or non-public and provide accessors if needed.(ş¹°ôıÿÿÿÿ8ùÃÌİ÷1J$f06f0443-1b8d-431b-8470-1afe7ca7d7c4
+java:S1104"XMake productsList a static final constant or non-public and provide accessors if needed.(ş¹°ôıÿÿÿÿ8ùÃÌİ÷1J$11079f5b-4386-4ac5-95a0-a8d948bf64a2
  
-java:S1104"]Make interestsObserver a static final constant or non-public and provide accessors if needed.(•×¢¤8ùÃÌİ÷1J$c366c48c-2cdd-4b31-b533-f2a4bc7634eb
+java:S1104"]Make interestsObserver a static final constant or non-public and provide accessors if needed.(•×¢¤8ùÃÌİ÷1J$01b6471e-637b-4f64-b0d9-ee9365f1dddf
 ‘
-java:S1104k"OMake nis a static final constant or non-public and provide accessors if needed.(œœ×P8ùÃÌİ÷1J$c5a524ed-121d-43a2-9f40-893c4f2eeb65
+java:S1104g"OMake nis a static final constant or non-public and provide accessors if needed.(œœ×P8ùÃÌİ÷1J$a86e3004-aa83-44f8-b42e-70963786f562
 ’
-java:S1104l"OMake nos a static final constant or non-public and provide accessors if needed.(ıÀÏ‚8ùÃÌİ÷1J$f85440e6-77b6-4935-8a7e-5c72443c1a07
-œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8ıÃÌİ÷1J$c83acd38-a7ca-4982-89e0-9ade82f89487
+java:S1104h"OMake nos a static final constant or non-public and provide accessors if needed.(ıÀÏ‚8ùÃÌİ÷1J$a392f2e0-c243-4e24-b09f-6de44d5ade0e
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8ıÃÌİ÷1J$187da1a6-4874-4cc6-b5d7-7024d098171f
 ’
-java:S2095["JUse try-with-resources or close this "ServerSocket" in a "finally" clause.(íîÁ¿ùÿÿÿÿ8šÄÌİ÷1J$5f1aff8a-2b50-49bc-a02e-88bfd0299e77
-	java:S116"[Rename this field "notification_oos" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”†¿€8¡ÄÌİ÷1J$b6fcb9f1-3c95-4ac7-9f7b-38ebb563e285
-¢	java:S116"[Rename this field "notification_ois" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·­“ˆùÿÿÿÿ8¡ÄÌİ÷1J$27721f89-60e2-4e44-90c8-f423e70103ad
+java:S2095X"JUse try-with-resources or close this "ServerSocket" in a "finally" clause.(íîÁ¿ùÿÿÿÿ8šÄÌİ÷1J$297360c0-5183-4e7f-9544-15bc5f1da5c1
+	java:S116"[Rename this field "notification_oos" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”†¿€8¡ÄÌİ÷1J$2fe183a7-c12d-4ed4-b067-10a53d169060
+¢	java:S116"[Rename this field "notification_ois" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·­“ˆùÿÿÿÿ8¡ÄÌİ÷1J$e4895c6b-9e80-4e31-82f8-acd2e26f3d0f
 d
-java:S1170"!Make this final field static too.(³àÀ™8³ÄÌİ÷1J$7238f031-511b-45db-855c-ef03a6592496
-ƒ	java:S125C"<This block of commented-out lines of code should be removed.(è¼®Úûÿÿÿÿ8äÄÌİ÷1J$ddd8bacd-31ef-4cc6-ad63-f41c3bb844ac
-ƒ	java:S125G"<This block of commented-out lines of code should be removed.(Ì²ÿËùÿÿÿÿ8åÄÌİ÷1J$c7746732-3278-4738-ba36-e52065b97cac
+java:S1170"!Make this final field static too.(³àÀ™8³ÄÌİ÷1J$3a8ffffb-6c43-4a57-a248-f504dcd83c94
+ƒ	java:S125@"<This block of commented-out lines of code should be removed.(è¼®Úûÿÿÿÿ8äÄÌİ÷1J$1b69bdbf-4acc-47b0-9920-8936fdb07976
+ƒ	java:S125D"<This block of commented-out lines of code should be removed.(Ì²ÿËùÿÿÿÿ8åÄÌİ÷1J$91234834-fdd9-442f-8249-6fd33cebb832
 }
-java:S1161Y":Add the "@Override" annotation above this method signature(“–ış8íÄÌİ÷1J$5103bee8-fba7-44bd-9aef-88744e7a09d7
-~	java:S125]"<This block of commented-out lines of code should be removed.(Îª¸Û8îÄÌİ÷1J$e888d77f-6fe4-4ef5-bc49-38327d30f842
+java:S1161V":Add the "@Override" annotation above this method signature(“–ış8íÄÌİ÷1J$aeb073a6-acac-4d45-8233-9f2fb39535c9
 ˆ
-java:S2147|"ECombine this catch with the one at line 122, which has the same body.(ıàÑÎ8ÅÌİ÷1J$fa3c4b1e-cfb0-41f8-83bc-1c4bd8ad1f09
-ƒ	java:S125w"<This block of commented-out lines of code should be removed.(Ÿ”Œºúÿÿÿÿ8‚ÅÌİ÷1J$61dbe500-3f89-4b85-859c-6e37ca14eef7
+java:S2147x"ECombine this catch with the one at line 118, which has the same body.(ıàÑÎ8ÅÌİ÷1J$9f493042-93ee-4858-8e82-2c293f737c4b
+ƒ	java:S125s"<This block of commented-out lines of code should be removed.(Ÿ”Œºúÿÿÿÿ8‚ÅÌİ÷1J$ddd95489-4891-45ac-8583-4ba26d99d310
+n
+java:S1128"+Remove this unused import 'Model.Requests'.(å—ìÅ8ÏÓà÷1J$03d6bf8a-f48c-4b26-95d3-f7988f53e29c

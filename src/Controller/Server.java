@@ -27,9 +27,6 @@ public class Server extends Thread {
 
     public Server() {
 
-
-
-
         addUser("mary", "abc");
         addUser("john", "abc");
 
@@ -90,7 +87,6 @@ public class Server extends Thread {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
 
-            //System.out.println("Server: skapad");
             while (true) {
                 Socket socket = serverSocket.accept();
 

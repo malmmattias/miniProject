@@ -53,7 +53,7 @@ public class ResizableProductsArray<T> {
         return -1;
     }
 
-    public void overwrite(int i, T element){
+    public synchronized void overwrite(int i, T element){
         array[i] = element;
     }
 

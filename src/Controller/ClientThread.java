@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static Model.Status.SOLD;
 import static java.lang.Thread.sleep;
 
 public class ClientThread implements Runnable {
@@ -71,10 +72,7 @@ public class ClientThread implements Runnable {
         private synchronized void reading() {
             try {
                 while (isRunning) {
-                    //System.out.println("Server: Client connected");
 
-                    //Gson gson = new Gson();
-                    //Request request = gson.fromJson(jsonMessage.toString(), Request.class);
                     Request request = (Request) is.readObject();
 
                     if (request instanceof SellProductRequest sellpr) {
@@ -96,7 +94,6 @@ public class ClientThread implements Runnable {
                         String productName = sellpr.getProduct().getName();
                         String notification = "Notification: "+ productName + " has been added to the products list";
 
-                        //checkForMatchingInterests(product);
                         ArrayList<String> usernames = server.interestsObserver.notify(productName);
                         for (String username : usernames) {
                             ObjectOutputStream channel = server.notification_oos.get(username);
@@ -141,11 +138,17 @@ public class ClientThread implements Runnable {
                             //Product p = (Product) is.readObject();
                             //p.setBuyer(userNameImportant);
 
+
                             int clientChoiceIndexed = (int) is.readObject();
 
-                            int i = server.products.findAndReplace(server.productsList.get(clientChoiceIndexed));
-                            //System.out.println(i+"Q");
-                            server.productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
+                            if(clientChoiceIndexed>-1) {
+                                int i = server.products.findAndReplace(server.productsList.get(clientChoiceIndexed));
+
+                                server.productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
+                                String seller = server.productsList.get(clientChoiceIndexed).getSeller();
+
+                                sendNotification("You have a purchase request", seller);
+                            }
 
 
                         } else {
@@ -196,7 +199,14 @@ public class ClientThread implements Runnable {
 
                                     server.extendMap(buyerName, product.getName(), server.purchaseHistory);
 
-                                    product.setStatus(Status.SOLD);
+                                    for(int i=0; i<server.products.size(); i++){
+                                        if (Objects.equals(product.getName(), server.products.get(i).getName())){
+                                            Product udpate = server.products.get(i);
+                                            udpate.setStatus(SOLD);
+                                            System.out.println(udpate.getStatus());
+                                            server.products.overwrite(i, udpate);
+                                        }
+                                    }
                                 }
 
                             }
@@ -231,6 +241,10 @@ public class ClientThread implements Runnable {
                         os.writeObject(verification);
                     }
 
+                    if(request instanceof ExitRequest){
+                        isRunning=false;
+                    }
+
 
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -244,23 +258,19 @@ public class ClientThread implements Runnable {
             }
         }
 
+        private void sendNotification(String message, String receiver) throws IOException {
+            ObjectOutputStream channel = server.notification_oos.get(receiver);
+            if(channel!=null) {
+                channel.writeObject(message);
+                channel.flush();
+            }
+        }
+
         private void completeTransaction(String buyerName, String sellerName, Product product) throws IOException {
             String salesConfirmation = STR."Congratulations transaction has been completed. From \{sellerName} to \{buyerName} for \{product.getName()} for \{product.getPrice()} kr";
 
-            //System.out.println(salesConfirmation);
-
-            ObjectOutputStream channel = server.notification_oos.get(buyerName);
-            if (channel!=null) {
-                channel.writeObject(salesConfirmation);
-                channel.flush();
-            }
-
-            ObjectOutputStream channel2 = server.notification_oos.get(sellerName);
-            if (channel2!=null) {
-                channel2.writeObject(salesConfirmation);
-                channel2.flush();
-            }
-
+            sendNotification(salesConfirmation, buyerName);
+            sendNotification(salesConfirmation, sellerName);
         }
 
         private ArrayList<Product> createUnfilteredSearch(String productName) {
