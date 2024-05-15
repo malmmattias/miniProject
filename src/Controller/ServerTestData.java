@@ -4,9 +4,9 @@ import Model.ItemCondition;
 import Model.Product;
 import Model.Status;
 
-public class ServerTestData {
+public class ServerTestData extends AbstractServer {
 
-    public static void addData(ResizableProductsArray<Product> products) {
+    public void addData(Server server) {
         Product product1 = new Product.Builder("iphone", 1000, 2022, "john", "none")
                 .color("Black")
                 .itemCondidtion(ItemCondition.NEW)
@@ -19,11 +19,8 @@ public class ServerTestData {
                 .status(Status.AVAILABLE)
                 .build();
 
-        products.add(product1);
-        products.add(product2);
-        //System.out.println("Products in the array:");
-        for (int i = 0; i < products.size(); i++) {
-            //System.out.println(products.get(i));
-        }
+        server.products.add(product1);
+        server.products.add(product2);
+
     }
 }

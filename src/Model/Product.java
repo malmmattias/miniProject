@@ -44,7 +44,7 @@ public class Product implements Serializable {
 
     }
 
-    private Product(Builder builder) {
+    public Product(Builder builder) {
         this.price = builder.price;
         this.yearOfProduction = builder.productionYear;
         this.color = builder.color;

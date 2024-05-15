@@ -12,9 +12,14 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class ServerHelper {
+public class ServerHelper extends AbstractServer {
+    private Server server;
 
-    public static ArrayList<Product> createFilteredSearch(SearchProductRequest spr2,
+    public ServerHelper(Server server) {
+        this.server = server;
+    }
+
+    public ArrayList<Product> createFilteredSearch(SearchProductRequest spr2,
                                                           String productName,
                                                           ResizableProductsArray<Product> products,
                                                           ArrayList<Product> productsList){
@@ -30,7 +35,7 @@ public class ServerHelper {
     }
 
 
-    public static String sell(SellProductRequest sellpr,
+    public String sell(SellProductRequest sellpr,
                               ResizableProductsArray<Product> products,
                               ObjectOutputStream os,
                               Map<String, ObjectOutputStream> notification_oos, Observer interestsObserver) throws IOException {
@@ -62,7 +67,7 @@ public class ServerHelper {
         return "Server: Product added";
     }
 
-    public String searchProduct(SearchProductRequest spr, ArrayList<Product> productsList, ObjectOutputStream os, ResizableProductsArray<Product> products, ObjectInputStream is) throws IOException, ClassNotFoundException {
+    public String searchProduct(SearchProductRequest spr, ObjectOutputStream os, ObjectInputStream is) throws IOException, ClassNotFoundException {
 
         String userNameImportant = spr.getUsername();
         //System.out.println("SEARCH " + spr.getUsername());
@@ -72,10 +77,10 @@ public class ServerHelper {
         boolean productFound = false;
 
         if (!spr.getFiltered()) {
-            productsList = createUnfilteredSearch(productName, productsList, products);
+            productsList = createUnfilteredSearch(productName, productsList, server.products);
             productFound = !productsList.isEmpty();
         } else if (spr.getFiltered()){
-            productsList = createFilteredSearch(spr, productName, products, productsList);
+            productsList = createFilteredSearch(spr, productName, server.products, productsList);
             productFound = !productsList.isEmpty();
         }
 
@@ -91,10 +96,15 @@ public class ServerHelper {
             //p.setBuyer(userNameImportant);
 
             int clientChoiceIndexed = (int) is.readObject();
+            //System.out.println("serverhelper: " + clientChoiceIndexed);
 
-            int i = products.findAndReplace(productsList.get(clientChoiceIndexed));
-            //System.out.println(i+"Q");
-            productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
+            Product newProduct = productsList.get(clientChoiceIndexed);
+
+            int i = server.products.findAndReplace(newProduct);
+            System.out.println(i+"Q" + userNameImportant);
+            newProduct.setBuyer(userNameImportant);
+            server.products.overwrite(i, newProduct);
+            //productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
         } else {
             os.writeObject(productFound);
         }

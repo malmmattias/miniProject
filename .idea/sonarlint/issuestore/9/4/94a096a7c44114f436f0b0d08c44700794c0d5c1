@@ -1,0 +1,6 @@
+
+
+java:S1319"dThe type of "cart" should be an interface such as "List" rather than the implementation "ArrayList".(Ò†§Øþÿÿÿÿ
+‹
+java:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(®ÚŒÁùÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ä…Üÿ

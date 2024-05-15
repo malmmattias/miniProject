@@ -11,3 +11,9 @@ U
 %src/Controller/ServerAddTestData.java,1/0/105796c0c61c582bb166a3ad7b412ac8ea9d63ef
 R
 "src/Controller/ServerTestData.java,5/a/5a1eb45f7361dfa37a21ca741467bdab100b5b0f
+Y
+)src/Model/Requests/BuyProductRequest.java,9/4/94a096a7c44114f436f0b0d08c44700794c0d5c1
+Z
+*src/Controller/ResizableProductsArray.java,4/2/42a5d67cf5791b050e17ef993d023f115fc00d7f
+R
+"src/Controller/AbstractServer.java,5/2/52b125795971fd584b8e869e54e32a121a06d365

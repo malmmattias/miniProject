@@ -1,0 +1,6 @@
+
+´
+java:S1319"lThe type of "productsList" should be an interface such as "List" rather than the implementation "ArrayList".(þ¹°ôýÿÿÿÿ8Åµ²Ü÷1J$b6ed3ba2-66f1-4162-b1cd-fafbe062d80e
+ 
+java:S1104"XMake productsList a static final constant or non-public and provide accessors if needed.(þ¹°ôýÿÿÿÿ8Æµ²Ü÷1J$0f9aaf57-2ec5-4c37-a9d8-5d990419d4bf
+œ	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(º›°Î8±ÎõÛ÷1J$7ce5c8d4-964b-420a-ae77-ceb7066921db

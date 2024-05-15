@@ -71,7 +71,7 @@ public class Client {
     private void notificationListener() {
         Thread notificationThread = new Thread(() -> {
             try {
-                Socket nSocket = new Socket(host, 8000);
+                Socket nSocket = new Socket(host, 2000);
                 //System.out.println("Client: noti connected");
                 ObjectInputStream nois = new ObjectInputStream(nSocket.getInputStream());
                 ObjectOutputStream noos = new ObjectOutputStream(nSocket.getOutputStream());
