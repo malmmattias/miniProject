@@ -7,6 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import Model.Requests.*;
@@ -35,8 +38,8 @@ public class Server extends Thread {
         start();
         testProductArray();
 
-        extendMap("john", "anItemJohnBought", purchaseHistory);
-        extendMap("john", "macBook", purchaseHistory);
+        extendMap("john", "anItemJohnBought" + "1998", purchaseHistory);
+        extendMap("john", "macBook" + "2012", purchaseHistory);
 
         interestsObserver.subscribe("john", "mac");
         interestsObserver.subscribe("mary", "coffee");
@@ -60,7 +63,6 @@ public class Server extends Thread {
 
         products.add(product1);
         products.add(product2);
-
     }
 
     private void addUser(String name, String password) {
@@ -328,7 +330,11 @@ public class Server extends Thread {
 
                                             String buyerName = product.getBuyer();
                                             String sellerName = product.getSeller();
-                                            extendMap(buyerName, product.getName(), purchaseHistory);
+
+                                            Year currentYear = Year.now();
+                                            int year = currentYear.getValue();
+
+                                            extendMap(buyerName, product.getName() + ", transaction at: " + year, purchaseHistory);
 
                                             //System.out.println("HERE");
                                             //System.out.println(buyerName + product.getName());

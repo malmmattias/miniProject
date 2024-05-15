@@ -7,10 +7,9 @@ import java.io.*;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -193,9 +192,15 @@ public class Client {
             if (history == null || history.isEmpty()) {
                 System.out.println("Your history is empty");
             } else {
+                System.out.println("Will you sort your history by date? then type the year – otherwise just type something else");
+                String focus = scanner.nextLine();
+
+                List<String> filteredList = getInput(history, focus);
+
                 System.out.println("Your history");
+
                 int counter = 1;
-                for (String str : history) {
+                for (String str : filteredList) {
                     System.out.println(counter++ + ". " + str);
                 }
             }
@@ -204,6 +209,26 @@ public class Client {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public static List<String> getInput(List<String> inputList, String inputDate) {
+        try {
+            List<String> filteredList = new ArrayList<>();
+
+            for (String stri : inputList) {
+                String str = stri.substring(stri.length() - 4);
+                int year = Integer.parseInt(str);
+                int input = Integer.parseInt(inputDate);
+
+                if(year>input){
+                    filteredList.add(stri);
+                }
+            }
+            return filteredList;
+
+        } catch (Exception e) {
+            return inputList;
+        }
     }
 
     private void registerInterest() {
@@ -259,13 +284,13 @@ public class Client {
                     ArrayList<Product> productsList = (ArrayList) o;
 
                     //if (o instanceof ArrayList) {
-                        int count = 1;
-                        for (Product a : productsList) {
-                            System.out.println(count++ + ". " + a.toStringHorizontal());
-                        }
+                    int count = 1;
+                    for (Product prod : productsList) {
+                        System.out.println(count++ + ". " + prod.toStringHorizontal());
+                    }
                     //}
 
-                    addToCartOption();
+                    addToCartOption(productsList);
 
                 } else {
                     System.out.println("Product not found!");
@@ -279,13 +304,17 @@ public class Client {
 
     }
 
-    private void addToCartOption() throws IOException {
+    private void addToCartOption(ArrayList<Product> productsList) throws IOException {
         System.out.println("Do you want to add product to cart? type the number of the product you want to add to cart or 0 to go back");
         String response = scanner.nextLine();
         int purchaseDecision = -1;
         try {
             purchaseDecision = Integer.parseInt(response) -1;
-            System.out.println("Your purchase request is sent, now you must wait for approval");
+            if(productsList.get(purchaseDecision).getStatus()!=Status.SOLD) {
+                System.out.println("Your purchase request is sent, now you must wait for approval");
+            } else {
+                System.out.println("Already sold!");
+            }
         } catch (NumberFormatException e) {
             System.out.println("Weird input!");
         }
