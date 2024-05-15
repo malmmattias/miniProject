@@ -11,6 +11,8 @@ import java.util.*;
 
 import Model.Requests.*;
 
+import static Model.Status.SOLD;
+
 public class Server extends Thread {
     private final Map<String, String> loginCredentials = new HashMap<>();
     private final Map<String, ArrayList<String>> userInterests = new HashMap<>();
@@ -21,8 +23,7 @@ public class Server extends Thread {
     private Observer interestsObserver = new Observer();
     private final Map<String, ObjectOutputStream> notification_oos = new HashMap<>();
     private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
-
-    //Change this later
+    private int currId = 100;
     private final int port = 1441;
 
     public Server() {
@@ -53,19 +54,18 @@ public class Server extends Thread {
                 .itemCondidtion(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
+        product1.setId(currId++);
 
         Product product2 = new Product.Builder("mac", 2000, 2021, "john", "none")
                 .color("Silver")
                 .itemCondidtion(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
+        product2.setId(currId++);
 
         products.add(product1);
         products.add(product2);
-        //System.out.println("Products in the array:");
-        for (int i = 0; i < products.size(); i++) {
-            //System.out.println(products.get(i));
-        }
+
     }
 
     private void addUser(String name, String password) {
@@ -108,7 +108,6 @@ public class Server extends Thread {
 
         });
         notificationThread.start(); // Start the thread
-
     }
 
     public ArrayList<String> getPurchaseHistory(String usrName) {
@@ -160,7 +159,6 @@ public class Server extends Thread {
     public class ClientThread implements Runnable {
         public ObjectInputStream is = null;
         public ObjectOutputStream os = null;
-        public ObjectOutputStream notiOS = null;
 
         private final Socket clientSocket;
         private final Socket notificationSocket;
@@ -221,6 +219,7 @@ public class Server extends Thread {
                             //System.out.println("Server: SellProductRequest");
                             int sizeBfr = products.size();
                             Product product = sellpr.getProduct();
+                            product.setId(currId++);
                             products.add(product);
 
                             products.toStringMethod();
@@ -377,33 +376,26 @@ public class Server extends Thread {
 
                                             String buyerName = product.getBuyer();
                                             String sellerName = product.getSeller();
+                                            int id = product.getId();
 
                                             completeTransaction(buyerName, sellerName, product);
 
                                             extendMap(buyerName, product.getName(), purchaseHistory);
 
-                                            product.setStatus(Status.SOLD);
+                                            System.out.println(products.findAndReplace(product) + "id" + id);
+
+                                            for (int i =0; i<products.size(); i++){
+                                                if (products.get(i).getId() == id){
+                                                    product.setStatus(SOLD);
+                                                    products.overwrite(i, product);
+                                                }
+                                            }
+
                                         }
 
                                     }
                                 }
 
-                            //}
-
-                            if(11==28) {
-
-                                for (Product product : cpr.getBuyerRequests()) {
-                                    product.toString2();
-
-                                    if (product.getStatus().equals(Status.PENDING)) {
-
-                                        String buyerName = product.getBuyer();
-                                        String sellerName = product.getSeller();
-
-                                        completeTransaction(buyerName, sellerName, product);
-                                    }
-                                }
-                            }
                         }
 
                         if (request instanceof BuyProductRequest) {
@@ -412,9 +404,9 @@ public class Server extends Thread {
                             purchaseReq.put(buyer, itemsToBuy);
                         }
 
-                        if (request instanceof AddUserRequest) {
-                            String username = request.getUsername();
-                            String password = request.getPassWord();
+                        if (request instanceof AddUserRequest aur) {
+                            String username = aur.getUsername();
+                            String password = aur.getPassWord();
                             addUser(username, password);
                         }
 
@@ -425,15 +417,11 @@ public class Server extends Thread {
                         }
 
                         if (request instanceof VerifyUserRequest vur) {
-                            String usrName = ((VerifyUserRequest) request).getUsrName();
-                            String psWord = ((VerifyUserRequest) request).getPsWord();
+                            String usrName = vur.getUsrName();
+                            String psWord = vur.getPsWord();
 
                             boolean verification = Objects.equals(loginCredentials.get(usrName), psWord);
-
-                            if(verification) {
-                                //notification_oos.put(usrName, notiOS); //Save oos for notifications channel
-                            }
-
+                            //System.out.println(verification);
                             os.writeObject(verification);
                         }
 

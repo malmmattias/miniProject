@@ -14,7 +14,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 
@@ -27,7 +26,7 @@ public class Client {
     private String lastName;
     private Date birthDate;
     private String email;
-    private final String username;
+    private String username;
     private String password;
     private String nothing;
     Scanner scanner = new Scanner(System.in);
@@ -54,7 +53,7 @@ public class Client {
         }
 
 
-        username = askLoginData();
+        askLoginData();
 
 
 
@@ -482,9 +481,8 @@ public class Client {
         }
     }
 
-    private String askLoginData() {
+    private void askLoginData() {
         System.out.println("Are you a new user? y/n");
-        String localized;
         String s = scanner.nextLine();
         if (Objects.equals(s, "y")) {
             System.out.println("Enter firstname: ");
@@ -494,20 +492,22 @@ public class Client {
             System.out.println("Enter email: ");
             email = scanner.nextLine();
             System.out.println("Enter username: ");
-            localized = scanner.nextLine();
+            username = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
             enterBirthDate();
             addUserToServer();
+            askLoginData();
         } else {
             System.out.println("Enter username: ");
-            localized = scanner.nextLine();
+            username = scanner.nextLine();
             System.out.println("Enter password: ");
             password = scanner.nextLine();
-            localized = verifyLogin(localized, password);
+            if (!verifyLogin(username, password)){
+                askLoginData();
+            }
         }
 
-        return localized;
 
     }
 
@@ -524,7 +524,7 @@ public class Client {
         System.out.println("Your login credentials are now saved on the server!");
     }
 
-    private String verifyLogin(String usrName, String psWord) {
+    private boolean verifyLogin(String usrName, String psWord) {
         currRequest = new VerifyUserRequest(usrName, psWord, username);
         boolean verification;
 
@@ -535,11 +535,11 @@ public class Client {
             throw new RuntimeException(e);
         }
         if (verification) {
-            System.out.println("Welcome");
-            return usrName;
+            System.out.println("Welcome " + username);
+            return true;
         } else {
             System.out.println("Wrong!");
-            return "";
+            return false;
         }
     }
 
