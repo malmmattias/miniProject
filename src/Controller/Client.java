@@ -28,7 +28,7 @@ public class Client {
 
     public Client() {
         try {
-            int port = 1441;
+            int port = 1442;
             Socket socket = new Socket(host, port);
             System.out.println("Client: connected");
             ois = new ObjectInputStream(socket.getInputStream());
@@ -47,7 +47,7 @@ public class Client {
     private void notificationListener() {
         Thread notificationThread = new Thread(() -> {
             try {
-                Socket nSocket = new Socket(host, 8000);
+                Socket nSocket = new Socket(host, 8001);
                 //System.out.println("Client: noti connected");
                 ObjectInputStream nois = new ObjectInputStream(nSocket.getInputStream());
                 ObjectOutputStream noos = new ObjectOutputStream(nSocket.getOutputStream());
@@ -397,42 +397,81 @@ public class Client {
                     loop = false;
                     break;
                 case "p":
-                    System.out.println("Enter new price: ");
-                    int newPrice = scanner.nextInt();
-                    scanner.nextLine();
-
+                    int newPrice = 0;
+                    while (true) {
+                        System.out.println("Enter new price: ");
+                        if (scanner.hasNextInt()) {
+                            newPrice = scanner.nextInt();
+                            scanner.nextLine();
+                            break;
+                        } else {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.next(); // discard the invalid input
+                        }
+                    }
                     product.setPrice(newPrice);
-
                     break;
                 case "y":
-                    System.out.println("Enter new year: ");
-                    int newYear = scanner.nextInt();
-                    scanner.nextLine();
-
+                    int newYear = 0;
+                    while (true) {
+                        System.out.println("Enter new year: ");
+                        if (scanner.hasNextInt()) {
+                            newYear = scanner.nextInt();
+                            scanner.nextLine();
+                            break;
+                        } else {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.next(); // discard the invalid input
+                        }
+                    }
                     product.setYearOfProduction(newYear);
                     break;
                 case "i":
-                    System.out.println("Enter new item condition" +
-                            "    1 = NEW,\n" +
-                            "    2 = VERY_GOOD,\n" +
-                            "    3 = GOOD,\n" +
-                            "    4 = USED,\n" +
-                            "    5 = NOT_WORKING_PROPERLY ");
-                    int itemCondition = scanner.nextInt();
-                    scanner.nextLine();
-
-                    modifyItemCondition(itemCondition, product);
+                    int newItemCondition = 0;
+                    while (true) {
+                        System.out.println("Enter new item condition:  "
+                                + "\n1 = NEW"
+                                + "\n2 = VERY_GOOD"
+                                + "\n3 = GOOD"
+                                + "\n4 = USED"
+                                + "\n5 = NOT_WORKING_PROPERLY");
+                        if (scanner.hasNextInt()) {
+                            newItemCondition = scanner.nextInt();
+                            scanner.nextLine();
+                            if (newItemCondition >= 1 && newItemCondition <= 5) {
+                                break;
+                            } else {
+                                System.out.println("Invalid input. Please enter a number between 1 and 5.");
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.next(); // discard the invalid input
+                        }
+                    }
+                    modifyItemCondition(newItemCondition, product);
                     break;
                 case "c":
-                    System.out.println("Enter new color: ");
-                    String nothing = scanner.nextLine(); //Bug
-                    String color = scanner.nextLine();
-                    product.setColor(color);
+                    System.out.println("Enter new color:");
+                    String newColor = "";
+                    while (newColor == null || newColor.trim().isEmpty()) {
+                        newColor = scanner.nextLine();
+                        if (newColor.trim().isEmpty()) {
+                            System.out.println("Invalid input. Please enter a non-empty string.");
+                        }
+                    }
+                    product.setColor(newColor);
+                    break;
                 case "n":
                     System.out.println("Enter new name:");
-                    nothing = scanner.nextLine(); //Bug
-                    String newName = scanner.nextLine();
+                    String newName = "";
+                    while (newName == null || newName.trim().isEmpty()) {
+                        newName = scanner.nextLine();
+                        if (newName.trim().isEmpty()) {
+                            System.out.println("Invalid input. Please enter a non-empty string.");
+                        }
+                    }
                     product.setName(newName);
+                    break;
             }
 
         }
@@ -463,29 +502,38 @@ public class Client {
         String s = scanner.nextLine();
         if (Objects.equals(s, "y")) {
             System.out.println("Enter firstname: ");
-            String firstName = scanner.nextLine();
+            String firstName = getValidStringInput();
             System.out.println("Enter lastname: ");
-            String lastName = scanner.nextLine();
+            String lastName = getValidStringInput();
             System.out.println("Enter email: ");
-            String email = scanner.nextLine();
+            String email = getValidStringInput();
             System.out.println("Enter username: ");
-            username = scanner.nextLine();
+            username = getValidStringInput();
             System.out.println("Enter password: ");
-            password = scanner.nextLine();
+            password = getValidStringInput();
             enterBirthDate();
             addUserToServer();
             askLoginData();
         } else {
             System.out.println("Enter username: ");
-            username = scanner.nextLine();
+            username = getValidStringInput();
             System.out.println("Enter password: ");
-            password = scanner.nextLine();
+            password = getValidStringInput();
             if (!verifyLogin(username, password)){
                 askLoginData();
             }
         }
+    }
 
-
+    private String getValidStringInput() {
+        String value = "";
+        while (value == null || value.trim().isEmpty()) {
+            value = scanner.nextLine();
+            if (value.trim().isEmpty()) {
+                System.out.println("Invalid input. Please enter a non-empty string.");
+            }
+        }
+        return value;
     }
 
     private void addUserToServer() {

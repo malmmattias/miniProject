@@ -104,7 +104,7 @@ public class Server extends Thread {
     private void run2() {
         Thread notificationThread = new Thread(() -> {
             try {
-                ServerSocket nServerSocket = new ServerSocket(8000);
+                ServerSocket nServerSocket = new ServerSocket(8001);
 
                 //System.out.println("Server2: skapad");
 
@@ -129,7 +129,7 @@ public class Server extends Thread {
 
     public void run() {
         try {
-            int port = 1441;
+            int port = 1442;
             ServerSocket serverSocket = new ServerSocket(port);
 
             //System.out.println("Server: skapad");
