@@ -7,9 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.time.Year;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import Model.Requests.*;
@@ -27,11 +25,13 @@ public class Server extends Thread {
     private final HashMap<String, ObjectOutputStream> notification_oos = new HashMap<>();
     //private final Map<String, ObjectInputStream> notification_ois = new HashMap<>();
     private HashMap<String, String> unsentNotifications = new HashMap<>();
+    private final HashMap<String, ArrayList<Product>> savedCarts = new HashMap<>();
     private int currId = 100;
 
     public Server() {
         addUser("mary", "abc");
         addUser("john", "abc");
+        addUser("farid", "abc");
 
         run2();
 
@@ -61,8 +61,16 @@ public class Server extends Thread {
                 .build();
         product2.setId(currId++);
 
+        Product product3 = new Product.Builder("mac", 2000, 2021, "farid", "none")
+                .color("Silver")
+                .itemCondidtion(ItemCondition.USED)
+                .status(Status.AVAILABLE)
+                .build();
+        product2.setId(currId++);
+
         products.add(product1);
         products.add(product2);
+        products.add(product3);
     }
 
     private void addUser(String name, String password) {
@@ -203,6 +211,10 @@ public class Server extends Thread {
 
                         Request request = (Request) is.readObject();
 
+                        if (request instanceof BuyCart bc){
+                            checkOutCarts(bc.getUsername());
+                        }
+
                         if (request instanceof FetchNotifications fn){
                             String username = fn.getUsername();
                             String message = unsentNotifications.get(username);
@@ -280,7 +292,17 @@ public class Server extends Thread {
 
                                 int clientChoiceIndexed = (int) is.readObject();
 
+
                                 if(clientChoiceIndexed>-1) {
+                                    ArrayList<Product> cart = savedCarts.get(userNameImportant);
+                                    if (cart == null) {
+                                        cart = new ArrayList<>();
+                                    }
+                                    cart.add(productsList.get(clientChoiceIndexed));
+
+                                    savedCarts.put(userNameImportant, cart);
+
+                                    /*
                                     String sellerName = productsList.get(clientChoiceIndexed).getSeller();
                                     //System.out.println(i+"Q");
                                     boolean okToBuy = productsList.get(clientChoiceIndexed).setBuyer(userNameImportant);
@@ -288,7 +310,7 @@ public class Server extends Thread {
                                         sendNotification("You received a request, ", sellerName);
                                     } else{
                                         sendNotification("Buyer and seller cannot be identical", sellerName);
-                                    }
+                                    }*/
                                 }
 
                             } else {
@@ -399,6 +421,24 @@ public class Server extends Thread {
                         throw new RuntimeException(e);
                     }
                 }
+            }
+
+            private void checkOutCarts(String username) throws IOException {
+                ArrayList<Product> cart = savedCarts.remove(username);
+
+                for (Product p : cart) {
+
+                    String sellerName = p.getSeller();
+                    //System.out.println(i+"Q");
+                    boolean okToBuy = p.setBuyer(username);
+                    if (okToBuy) {
+                        sendNotification("You received a request, ", sellerName);
+                    } else {
+                        sendNotification("Buyer and seller cannot be identical", sellerName);
+                    }
+
+                }
+
             }
 
             private synchronized void sendNotification(String s, String sellerName) throws IOException {

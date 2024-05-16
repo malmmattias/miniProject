@@ -84,8 +84,8 @@ public class Client {
         System.out.println("3. Register interest in product category.");
         System.out.println("4. Show purchase history.");
         System.out.println("5. Check purchase requests");
-        //System.out.println("6. To check notifications");
-        System.out.println("6. To exit");
+        System.out.println("6. Check out cart");
+        System.out.println("7. To exit");
         int choice = scanner.nextInt();
         scanner.nextLine();
         try {
@@ -106,6 +106,9 @@ public class Client {
                     checkPurchaseRequests();
                     break;
                 case 6:
+                    cart();
+                    break;
+                case 7:
                     exitClient();
                     //checkNoti();
                     break;
@@ -114,6 +117,11 @@ public class Client {
         } catch (Exception e) {
             System.out.println("Weird input!");
         }
+    }
+
+    private void cart() throws IOException {
+        System.out.println("Your purchase requests are sent, now you will get approval notifications when sellers accept your request");
+        oos.writeObject(new BuyCart(username));
     }
 
     private void checkNoti() {
@@ -309,7 +317,7 @@ public class Client {
         try {
             purchaseDecision = Integer.parseInt(response) -1;
             if(productsList.get(purchaseDecision).getStatus()!=Status.SOLD) {
-                System.out.println("Your purchase request is sent, now you must wait for approval");
+                System.out.println("Product added to your cart, now you may checkout");
             } else {
                 System.out.println("Already sold!");
             }
