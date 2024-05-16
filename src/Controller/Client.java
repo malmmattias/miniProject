@@ -119,9 +119,11 @@ public class Client {
         }
     }
 
-    private void cart() throws IOException {
-        System.out.println("Your purchase requests are sent, now you will get approval notifications when sellers accept your request");
+    private void cart() throws IOException, ClassNotFoundException {
         oos.writeObject(new BuyCart(username));
+        oos.flush();
+        String response = (String) ois.readObject();
+        System.out.println(response);
     }
 
     private void checkNoti() {
@@ -317,13 +319,20 @@ public class Client {
         try {
             purchaseDecision = Integer.parseInt(response) -1;
             if(productsList.get(purchaseDecision).getStatus()!=Status.SOLD) {
-                System.out.println("Product added to your cart, now you may checkout");
+                if(Objects.equals(productsList.get(purchaseDecision).getSeller(), username)){
+                    System.out.println("You can not buy your own products");
+                    purchaseDecision = -1;
+                } else {
+                    System.out.println("Product added to your cart, now you may checkout");
+                }
             } else {
                 System.out.println("Already sold!");
+                purchaseDecision = -1;
             }
         } catch (NumberFormatException e) {
             System.out.println("Weird input!");
         }
+
         oos.writeObject(purchaseDecision);
     }
 

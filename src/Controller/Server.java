@@ -66,11 +66,19 @@ public class Server extends Thread {
                 .itemCondidtion(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
-        product2.setId(currId++);
+        product3.setId(currId++);
+
+        Product product4 = new Product.Builder("macAir", 20000, 2021, "farid", "none")
+                .color("White")
+                .itemCondidtion(ItemCondition.NEW)
+                .status(Status.AVAILABLE)
+                .build();
+        product4.setId(currId++);
 
         products.add(product1);
         products.add(product2);
         products.add(product3);
+        products.add(product4);
     }
 
     private void addUser(String name, String password) {
@@ -424,9 +432,13 @@ public class Server extends Thread {
             }
 
             private void checkOutCarts(String username) throws IOException {
-                ArrayList<Product> cart = savedCarts.remove(username);
+                ArrayList<Product> cart = null;
+                cart = savedCarts.remove(username);
 
+                String prodInCart="";
+                if(cart!=null){
                 for (Product p : cart) {
+                    prodInCart += p.getName() + ", ";
 
                     String sellerName = p.getSeller();
                     //System.out.println(i+"Q");
@@ -437,6 +449,13 @@ public class Server extends Thread {
                         sendNotification("Buyer and seller cannot be identical", sellerName);
                     }
 
+                }
+                }
+
+                if(prodInCart.isEmpty()){
+                    os.writeObject("Cart empty");
+                } else {
+                    os.writeObject("Your purchase requests: " + prodInCart + " are sent, now you will get approval notifications when sellers accept your request");
                 }
 
             }
