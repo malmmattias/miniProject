@@ -47,33 +47,30 @@ public class Server extends Thread {
 
     // To test that the products can be found
     public void testProductArray() {
-        Product product1 = new Product.Builder("iphone", 1000, 2022, "john", "none")
+        Product product1 = new Product.ProductBuilder("iphone", 1000,
+                2022, "john", "none", currId++)
                 .color("Black")
-                .itemCondidtion(ItemCondition.NEW)
+                .itemCondition(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
-        product1.setId(currId++);
 
-        Product product2 = new Product.Builder("mac", 2000, 2021, "john", "none")
+        Product product2 = new Product.ProductBuilder("mac", 2000, 2021, "john", "none", currId++)
                 .color("Silver")
-                .itemCondidtion(ItemCondition.USED)
+                .itemCondition(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
-        product2.setId(currId++);
 
-        Product product3 = new Product.Builder("mac", 2000, 2021, "farid", "none")
+        Product product3 = new Product.ProductBuilder("mac", 2000, 2021, "farid", "none", currId++)
                 .color("Silver")
-                .itemCondidtion(ItemCondition.USED)
+                .itemCondition(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
-        product3.setId(currId++);
 
-        Product product4 = new Product.Builder("macAir", 20000, 2021, "farid", "none")
+        Product product4 = new Product.ProductBuilder("macAir", 20000, 2021, "farid", "none", currId++)
                 .color("White")
-                .itemCondidtion(ItemCondition.NEW)
+                .itemCondition(ItemCondition.NEW)
                 .status(Status.AVAILABLE)
                 .build();
-        product4.setId(currId++);
 
         products.add(product1);
         products.add(product2);

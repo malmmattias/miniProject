@@ -378,9 +378,9 @@ public class Client {
     }
 
     private Product createProduct() {
-        Product product = new Product.Builder("Sample Product", 100, 2024, username, "none")
+        Product product = new Product.ProductBuilder("Sample Product", 100, 2024, username, "none", -1)
                 .color("Red")
-                .itemCondidtion(ItemCondition.USED)
+                .itemCondition(ItemCondition.USED)
                 .status(Status.AVAILABLE)
                 .build();
 
